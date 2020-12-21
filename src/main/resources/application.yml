@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: dev
+
+# security 使能
+security:
+  basic:
+    enabled: false

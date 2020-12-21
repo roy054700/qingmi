@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qingmi.yi.modular.news.dao.FinalNewsContentMapper">
+    <resultMap id="BaseResultMap" type="com.qingmi.yi.modular.news.model.FinalNewsContent">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="content_id" property="contentId" jdbcType="BIGINT"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="source" property="source" jdbcType="VARCHAR"/>
+        <result column="content_info" property="contentInfo" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+
+    <select id="selectPage" parameterType="com.qingmi.yi.modular.news.model.FinalNewsContent"
+            resultMap="BaseResultMap">
+        select id,content_id,title,source,content_info,create_time from final_news_content
+        where 1=1
+        <if test="p.source != null and p.source !='' and p.source !='null'">
+            and source=#{p.source}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>
