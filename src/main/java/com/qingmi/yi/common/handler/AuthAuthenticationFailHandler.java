@@ -19,6 +19,7 @@ import java.io.IOException;
 //@Component
 public class AuthAuthenticationFailHandler implements AuthenticationFailureHandler {
 
+
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
       log.info("=========================================登录失败============================================");
