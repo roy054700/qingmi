@@ -72,7 +72,17 @@
             <artifactId>jjwt</artifactId>
             <version>${jjwt.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+        <!-- swagger -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+        </dependency>
         <!-- 集合、缓存等工具包 -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -265,6 +275,17 @@
             <version>2.3.6.RELEASE</version>
         </dependency>
 
+        <!--安全框架 security-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security.oauth.boot</groupId>
+            <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+            <version>2.0.3.RELEASE</version>
+        </dependency>
+
         <!-- thymeleaf模板 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -292,6 +313,18 @@
                 </configuration>
             </plugin>
         </plugins>
+
+
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
     </build>
 
     <repositories>
