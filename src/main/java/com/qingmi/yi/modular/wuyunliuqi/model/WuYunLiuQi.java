@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 
 /**
+ * 五运六气
  * @Author: 李龙真
  * @Date: 2020/12/27 13:22
  */
@@ -17,5 +18,5 @@ public class WuYunLiuQi extends Model<WuYunLiuQi> {
     public String threeName;
     public int tianId;
     public int type;
-    public int order;
+    public int sort;
 }

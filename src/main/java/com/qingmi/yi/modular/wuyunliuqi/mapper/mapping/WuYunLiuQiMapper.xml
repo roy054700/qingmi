@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qingmi.yi.modular.wuyunliuqi.mapper.WuYunLiuQiMapper">
+    <resultMap id="BaseResultMap" type="com.qingmi.yi.modular.wuyunliuqi.model.WuYunLiuQi">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="one_name" property="oneName" jdbcType="VARCHAR"/>
+        <result column="tow_name" property="towName" jdbcType="VARCHAR"/>
+        <result column="three_name" property="threeName" jdbcType="VARCHAR"/>
+        <result column="tian_id" property="tianId" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="order" property="order" jdbcType="VARCHAR"/>
+    </resultMap>
+</mapper>
