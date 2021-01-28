@@ -43,7 +43,7 @@ public class HttpClientUtils
     /**
      * post请求传输json参数
      * @param url  url地址
-     * @param json 参数
+     * @param jsonParam 参数
      * @return
      */
     public static JSONObject httpPost(String url, JSONObject jsonParam)
@@ -97,7 +97,7 @@ public class HttpClientUtils
      * post请求传输String参数 例如：name=Jack&sex=1&type=2
      * Content-type:application/x-www-form-urlencoded
      * @param url            url地址
-     * @param strParam       参数
+     * @param paramMap       参数
      * @return
      */
     public static String httpPost(String url,Map<String,Object> paramMap)

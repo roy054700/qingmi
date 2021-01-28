@@ -46,12 +46,17 @@ public class FinalNewsContentController extends BaseController {
 
     /**
      * app客户端访问数据,分页查询
+     * @param pageNo 页码
+     * @param pageSize 条数
+     * @param model 分类参数
+     * @param top 广告参数
+     * @return
      */
     @RequestMapping(value = "/appList")
     @ResponseBody
-    public ResponseEntity<?> appList(Integer pageNo, Integer pageSize,FinalNewsContent model) {
+    public ResponseEntity<?> appList(Integer pageNo, Integer pageSize,FinalNewsContent model,String top) {
         System.out.print(model.toString());
-        List<FinalNewsContent> list = finalNewsContentService.selectPage(new Page<>(pageNo, pageSize), model);
+        List<FinalNewsContent> list = finalNewsContentService.selectPage(new Page<>(pageNo, pageSize), model,top);
         if (list != null) {
             for (int i = 0; i < list.size(); i++) {
                 FinalNewsContent con = list.get(i);

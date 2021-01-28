@@ -35,13 +35,13 @@ public class WuYunLiuQiController  {
      * @return
      */
     @RequestMapping("/getWuLiu")
-    public R<?> getWuLiu() {
+    public R<?> getWuLiu(String date) {
         List<WuYunLiuQi> list = new ArrayList<>();
         QueryWrapper<TianGanDiZhi> tianGanDiZhiQueryWrapper = new QueryWrapper<>();
-        tianGanDiZhiQueryWrapper.eq("name",WuLiuUtils.getGanZhi());
+        tianGanDiZhiQueryWrapper.eq("name",WuLiuUtils.getGanZhi(date));
         int tianId=tianGanDiZhiService.getOne(tianGanDiZhiQueryWrapper).getId();;//计算天干地支id
-        int wuOrder=WuLiuUtils.getWuYun();//五运的编号
-        int liuOrder=WuLiuUtils.getLiuQi();//六气的编号
+        int wuOrder=WuLiuUtils.getWuYun(date);//五运的编号
+        int liuOrder=WuLiuUtils.getLiuQi(date);//六气的编号
         QueryWrapper<WuYunLiuQi> wrapper = new QueryWrapper<>();
         wrapper.eq("tian_id", tianId).eq("sort", wuOrder).eq("type",1);
         //查询五运 1 为五运；
@@ -55,9 +55,6 @@ public class WuYunLiuQiController  {
         list.add(liu);
         return ResponseUtils.success(list);
     }
-
-
-
 
 
 }

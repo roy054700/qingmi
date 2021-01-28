@@ -119,7 +119,7 @@ public class NewsTop extends Model<NewsTop> {
     }
 
     /**
-     * @param createdtime the createdtime to set
+     * @param
      */
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime;

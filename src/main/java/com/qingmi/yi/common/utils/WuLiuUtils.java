@@ -1,5 +1,7 @@
 package com.qingmi.yi.common.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -81,10 +83,17 @@ public class WuLiuUtils {
      * 获取当前日期对应的五运
      * @return
      */
-    public static int getWuYun(){
+    public static int getWuYun(String date1){
+
         Calendar now = Calendar.getInstance();
         int year = now.get(Calendar.YEAR);
-
+        if(StringUtils.isNotBlank(date1)){
+            String[] split = date1.split(",");
+            year = Integer.parseInt(split[0]);
+            int month = Integer.parseInt(split[1]);
+            int day = Integer.parseInt(split[2]);
+            now.set(year,month,day);
+        }
         int daHan = sTermDate(year,1,0);
         String date = dateFormat.format(now.getTime());
         int nowDate = Integer.parseInt(date);
@@ -126,11 +135,17 @@ public class WuLiuUtils {
      * 获取当前日期所对应的六气
      * @return
      */
-    public static int getLiuQi(){
+    public static int getLiuQi(String date1){
 
         Calendar now = Calendar.getInstance();
         int year = now.get(Calendar.YEAR);
-
+        if(StringUtils.isNotBlank(date1)){
+            String[] split = date1.split(",");
+            year = Integer.parseInt(split[0]);
+            int month = Integer.parseInt(split[1]);
+            int day = Integer.parseInt(split[2]);
+            now.set(year,month,day);
+        }
         int daHan = sTermDate(year,1,0);
         String date = dateFormat.format(now.getTime());
         int nowDate = Integer.parseInt(date);
@@ -192,12 +207,18 @@ public class WuLiuUtils {
     /**
      * 初始化年月日对应的天干地支
      */
-    public static void initGanZhi() {
+    public static void initGanZhi(String date) {
         //获取现在的时间
         Calendar calendar_now = Calendar.getInstance();
         int year = calendar_now.get(Calendar.YEAR);
         int month = calendar_now.get(Calendar.MONTH);
         int day =calendar_now.get(Calendar.DATE);
+        if(StringUtils.isNotBlank(date)){
+            String[] split = date.split(",");
+            year = Integer.parseInt(split[0]);
+            month = Integer.parseInt(split[1]);
+            day = Integer.parseInt(split[2]);
+        }
         calendar_now.set(year, month, day);
         long date_now = calendar_now.getTime().getTime();
         //获取1900-01-31的时间
@@ -279,16 +300,16 @@ public class WuLiuUtils {
      * 获取天干地支
      * @return
      */
-    public static String getGanZhi() {
-        initGanZhi();
+    public static String getGanZhi(String date) {
+        initGanZhi(date);
         return ganZhi(year_ganZhi);
     }
 
     public static void main(String[] args) {
-        int yun = getWuYun();
-        int qi = getLiuQi();
-        String s = getGanZhi();
-        System.out.println("s="+s);
+//        int yun = getWuYun();
+//        int qi = getLiuQi();
+//        String s = getGanZhi();
+//        System.out.println("s="+s);
 
     }
 }
