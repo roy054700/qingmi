@@ -2,6 +2,8 @@ package com.qingmi.yi.modular.news.controller;
 
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +11,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.qingmi.yi.common.base.BaseController;
 import com.qingmi.yi.modular.news.model.FinalNewsContent;
@@ -23,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.HtmlUtils;
@@ -40,37 +45,32 @@ public class FinalNewsContentController extends BaseController {
 
 
     @Autowired
-    private FinalNewsPictureService finalNewsPictureService;
-    @Autowired
     private FinalNewsContentService finalNewsContentService;
 
-    /**
-     * app客户端访问数据,分页查询
-     * @param pageNo 页码
-     * @param pageSize 条数
-     * @param model 分类参数
-     * @param top 广告参数
-     * @return
-     */
-    @RequestMapping(value = "/appList")
+
+    @RequestMapping(value = "/list")
     @ResponseBody
-    public ResponseEntity<?> appList(Integer pageNo, Integer pageSize,FinalNewsContent model,String top) {
-        System.out.print(model.toString());
-        List<FinalNewsContent> list = finalNewsContentService.selectPage(new Page<>(pageNo, pageSize), model,top);
-        if (list != null) {
-            for (int i = 0; i < list.size(); i++) {
-                FinalNewsContent con = list.get(i);
-                QueryWrapper<FinalNewsPicture> ew = new QueryWrapper<FinalNewsPicture>();
-                ew.eq("content_id", con.getContentId());
-                List<FinalNewsPicture> picList = finalNewsPictureService.list(ew);
-                con.setPicList(picList);
-            }
-        }
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("code", "ok");
-        map.put("newList", list);
-        return ResponseEntity.ok(map);
+    public ResponseEntity<?> list(@RequestBody String json) {
+
+        JSONObject map =  JSONObject.parseObject(json);
+        Integer pageNo = Integer.parseInt(map.get("pageNo").toString());
+        Integer pageSize = Integer.parseInt(map.get("pageSize").toString());
+        String source = map.get("source").toString();
+        String top = map.get("top").toString();
+
+        FinalNewsContent fnc = new FinalNewsContent();
+        fnc.setSource(source);
+        Page<FinalNewsContent> page = new Page<>(pageNo, pageSize);
+        List<FinalNewsContent> list = finalNewsContentService.selectPage(page, fnc,top);
+
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        map1.put("code", "ok");
+        map1.put("newList", list);
+        return ResponseEntity.ok(map1);
     }
+
+
+
 
     /**
      * app查询数据详情

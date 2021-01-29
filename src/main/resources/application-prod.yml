@@ -2,8 +2,8 @@ server:
   port: 9092
 spring:
     druid:
-      driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://172.17.16.5:3306/news?useUnicode=true&allowMultiQueries=true&characterEncoding=utf8
+      driverClassName: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://172.17.16.5:3306/news?characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
       username: root
       password: yjcsxdl123!@#
       initialSize: 5
@@ -17,6 +17,7 @@ spring:
       testWhileIdle: true
       testOnBorrow: false
       testOnReturn: false
+      db-type: com.alibaba.druid.pool.DruidDataSource
 
 
 ###################  mybatis-plus配置  ###################
@@ -36,6 +37,8 @@ mybatis-plus:
 
 
 logging:
+  path: logs/
+  file: ${logging.path}qingmi
   config: classpath:logback-spring.xml
   level:
     root: info

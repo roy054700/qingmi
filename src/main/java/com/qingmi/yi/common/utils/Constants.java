@@ -8,4 +8,7 @@ package com.qingmi.yi.common.utils;
 public class Constants {
     //广告接口地址
     public static final String TOP_URL = "http://adv.dandinghuayi.com/danding-api/adv/getAdv";
+    //广告间隔条数
+    public static final Integer TOP_SIZE = 5;
+
 }

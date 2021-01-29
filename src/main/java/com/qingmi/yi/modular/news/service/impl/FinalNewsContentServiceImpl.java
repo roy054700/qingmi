@@ -8,11 +8,17 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qingmi.yi.common.utils.Constants;
 import com.qingmi.yi.common.utils.HttpClientUtils;
 import com.qingmi.yi.modular.news.dao.FinalNewsContentMapper;
+import com.qingmi.yi.modular.news.dao.FinalNewsPictureMapper;
 import com.qingmi.yi.modular.news.model.Ads;
 import com.qingmi.yi.modular.news.model.FinalNewsContent;
 import com.qingmi.yi.modular.news.model.FinalNewsPicture;
@@ -26,24 +32,60 @@ public class FinalNewsContentServiceImpl extends ServiceImpl<FinalNewsContentMap
 
     @Autowired
     private FinalNewsContentMapper finalNewsContentMapper;
+    @Autowired
+    FinalNewsPictureMapper finalNewsPictureMapper;
 
     @Override
-    public List<FinalNewsContent> selectPage(Page<Map<Object, Object>> page, FinalNewsContent model,String top) {
+    public List<FinalNewsContent> selectPage(Page<FinalNewsContent> page, FinalNewsContent model,String top) {
         List<FinalNewsContent> list = finalNewsContentMapper.selectPage(page, model);
-        list.addAll(0,getTopContent(top));
-        return list;
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                FinalNewsContent con = list.get(i);
+                QueryWrapper<FinalNewsPicture> ew = new QueryWrapper<FinalNewsPicture>();
+                ew.eq("content_id", con.getContentId());
+                List<FinalNewsPicture> picList = finalNewsPictureMapper.selectList(ew);
+                con.setPicList(picList);
+            }
+        }else {
+            return list;
+        }
+        //list.addAll(0,getTopContent(top));
+        return getList(list,getTopContent(top));
     }
 
     /**
-     * 根据手机参数 使用http 获取广告信息
-     * @param top
+     * 5条广告
+     * 在 list 中间隔五个元素插入一条 topList 里面的数据
+     * @param list
+     * @param topList
      * @return
      */
-    public List<FinalNewsContent> getTopContent(String top) {
+    private List<FinalNewsContent> getList(List<FinalNewsContent> list,List<FinalNewsContent> topList){
+        int num = list.size()/Constants.TOP_SIZE;
+       for(int i=0;i<num;i++){
+           if(i==num){
+               list.add(topList.get(i));
+           }else {
+               int index = (i + 1) * 6 - 1;
+               list.add(index, topList.get(i));
+           }
+       }
+        return list;
+    }
+
+
+
+
+    /**
+     * 根据手机参数 使用http 获取广告信息
+     * @param json
+     * @return
+     */
+    public List<FinalNewsContent> getTopContent(String json) {
+        JSONArray jsonArray = JSONArray.parseArray(json);
         List<FinalNewsContent> list = new ArrayList<>();
-        String[] split = top.split("|");
-        for(int i = 0; i < split.length; i++){
-            JSONObject jsonObject = HttpClientUtils.httpPost(Constants.TOP_URL, split[i]);
+        for(int i = 0; i < jsonArray.size(); i++){
+            JSONObject jsonObject = HttpClientUtils.httpPost(Constants.TOP_URL, jsonArray.getJSONObject(i).toJSONString());
             FinalNewsContent fnc = jsonToModel(jsonObject);
             list.add(fnc);
         }
@@ -88,18 +130,11 @@ public class FinalNewsContentServiceImpl extends ServiceImpl<FinalNewsContentMap
         cnt.setPicList(list);
         cnt.setTitle(ads.getDisplayTitle());
         cnt.setUrl(url);
+        cnt.setTop(true);
         return cnt;
 
 
     }
-
-
-
-
-
-
-
-
 
 
 

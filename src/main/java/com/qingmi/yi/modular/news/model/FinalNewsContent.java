@@ -49,6 +49,7 @@ public class FinalNewsContent extends Model<FinalNewsContent> {
      */
     private Date createTime;
 
+    @TableField(exist = false)
     private boolean isTop = false;//是否是广告 是 true ,否 false
 
     /**

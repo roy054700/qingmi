@@ -12,12 +12,11 @@
     </resultMap>
 
 
-    <select id="selectPage" parameterType="com.qingmi.yi.modular.news.model.FinalNewsContent"
-            resultMap="BaseResultMap">
-        select id,content_id,title,source,content_info,create_time from final_news_content
+    <select id="selectPage" resultMap="BaseResultMap">
+        select id,content_id,title,source from final_news_content
         where 1=1
-        <if test="p.source != null and p.source !='' and p.source !='null'">
-            and source=#{p.source}
+        <if test="e.source != null and e.source !='' and e.source !='null'">
+            and source=#{e.source}
         </if>
         ORDER BY create_time DESC
     </select>

@@ -170,7 +170,7 @@ public class HttpClientUtils
                 // 解决中文乱码问题
                 StringEntity entity = new StringEntity(strParam, "utf-8");
                 entity.setContentEncoding("UTF-8");
-                entity.setContentType("application/x-www-form-urlencoded");
+                entity.setContentType("application/json");
                 httpPost.setEntity(entity);
             }
             CloseableHttpResponse result = httpClient.execute(httpPost);
