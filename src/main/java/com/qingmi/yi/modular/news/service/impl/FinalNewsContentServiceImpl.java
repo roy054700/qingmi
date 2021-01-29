@@ -66,7 +66,7 @@ public class FinalNewsContentServiceImpl extends ServiceImpl<FinalNewsContentMap
            if(i==num){
                list.add(topList.get(i));
            }else {
-               int index = (i + 1) * 6 - 1;
+               int index = (Constants.TOP_SIZE +1) * i + Constants.TOP_SIZE;
                list.add(index, topList.get(i));
            }
        }
