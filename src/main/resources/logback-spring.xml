@@ -2,7 +2,7 @@
 <configuration  scan="true" scanPeriod="10 seconds">
 <!-- 日志级别从低到高分为TRACE < DEBUG < INFO < WARN < ERROR < FATAL，如果设置为WARN，则低于WARN的信息都不会输出 -->
    <contextName>logback</contextName>
-   <property name="LOG_PATH"   value="/home/gengyu/software/auth"></property>
+   <property name="LOG_PATH"   value="${LOG_FILE}"></property>
 
    <!-- 彩色日志 -->
    <!-- 彩色日志依赖的渲染类 -->

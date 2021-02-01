@@ -15,8 +15,8 @@ spring:
       minEvictableIdleTimeMillis: 1800000
       maxEvictableIdleTimeMillis: 25200000
       testWhileIdle: true
-      testOnBorrow: false
-      testOnReturn: false
+      testOnBorrow: true
+      testOnReturn: true
       db-type: com.alibaba.druid.pool.DruidDataSource
 
 ###################  mybatis-plus配置  ###################

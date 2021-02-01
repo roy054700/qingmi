@@ -20,7 +20,7 @@ public interface FinalNewsContentMapper extends BaseMapper<FinalNewsContent> {
      * 分页查询信息
      *
      */
-     //List<FinalNewsContent> selectPage(@Param("page") Pagination pagination, @Param("p") FinalNewsContent model, @Param("w") Wrapper<FinalNewsContent> wrapper);
+     List<FinalNewsContent> selectPage(@Param("p") Page<FinalNewsContent> page, @Param("e") FinalNewsContent model, @Param("ew") Wrapper<FinalNewsContent> wrapper);
 
     List<FinalNewsContent> selectPage(@Param("p") Page<FinalNewsContent> page, @Param("e") FinalNewsContent model);
 }

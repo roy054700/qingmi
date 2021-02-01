@@ -50,11 +50,14 @@ public class FinalNewsContent extends Model<FinalNewsContent> {
     private Date createTime;
 
     @TableField(exist = false)
-    private boolean isTop = false;//是否是广告 是 true ,否 false
+    private boolean top = false;//是否是广告 是 true ,否 false
 
+    @TableField(exist = false)
+    private boolean focus = false;//是否是轮播图广告 是 true ,否 false
     /**
      * 广告跳转链接
      */
+    @TableField(exist = false)
     private String url;
 
     @TableField(exist = false)

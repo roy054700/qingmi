@@ -11,4 +11,6 @@ public class Constants {
     //广告间隔条数
     public static final Integer TOP_SIZE = 5;
 
+    public static final String  FOCUS = "95206,95207,95208,95209"; // 焦点图广告
+
 }

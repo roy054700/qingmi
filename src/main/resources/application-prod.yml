@@ -10,13 +10,13 @@ spring:
       maxActive: 50
       minIdle: 5
       maxWait: 50000
-      validationQuery: SELECT 1
+      validationQuery: SELECT 'x'
       timeBetweenEvictionRunsMillis: 60000
       minEvictableIdleTimeMillis: 1800000
       maxEvictableIdleTimeMillis: 25200000
       testWhileIdle: true
-      testOnBorrow: false
-      testOnReturn: false
+      testOnBorrow: true
+      testOnReturn: true
       db-type: com.alibaba.druid.pool.DruidDataSource
 
 
