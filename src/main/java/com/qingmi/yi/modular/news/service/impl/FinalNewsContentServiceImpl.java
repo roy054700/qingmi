@@ -19,6 +19,7 @@ import com.qingmi.yi.modular.news.model.FinalNewsContent;
 import com.qingmi.yi.modular.news.model.FinalNewsPicture;
 import com.qingmi.yi.modular.news.model.ResponseParameters;
 import com.qingmi.yi.modular.news.service.FinalNewsContentService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,8 +45,13 @@ public class FinalNewsContentServiceImpl extends ServiceImpl<FinalNewsContentMap
         }else {
             return list;
         }
-        //list.addAll(0,getTopContent(top));
-        return getList(list,getTopContent(top));
+        List<FinalNewsContent> topContent = getTopContent(top);
+        if(topContent != null && topContent.size() > 0){
+            list.addAll(topContent);
+        }
+
+        return list;
+        //return getList(list,getTopContent(top));
     }
 
     /**
@@ -79,6 +85,9 @@ public class FinalNewsContentServiceImpl extends ServiceImpl<FinalNewsContentMap
      * @return
      */
     public List<FinalNewsContent> getTopContent(String json) {
+        if(StringUtils.isEmpty(json)){
+            return null;
+        }
         JSONArray jsonArray = JSONArray.parseArray(json);
         List<FinalNewsContent> list = new ArrayList<>();
         for(int i = 0; i < jsonArray.size(); i++){
