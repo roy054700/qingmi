@@ -35,8 +35,8 @@ public class UserApi {
         SysUserAuthentication byUser = userService.findByUsername(user);
         userForBase.setId(byUser.getId());
         userForBase.setUsername(byUser.getUsername());
-        userForBase.setPassword(byUser.getPassword());
-        if (!userForBase.getPassword().equals(user.getPassword())) {
+        //userForBase.setPassword(byUser.getPassword());
+        if (byUser == null) {
             jsonObject.put("message", "登录失败,密码错误");
             return jsonObject;
         } else {

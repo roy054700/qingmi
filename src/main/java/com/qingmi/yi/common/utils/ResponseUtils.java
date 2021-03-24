@@ -43,6 +43,14 @@ public class ResponseUtils {
 				.setData(data);
 		return response;
 	}
+
+	public static R<?> success() {
+		R<Object> response = new R<>()
+				.setCode(ResponseEnum.SUCCESS.getCode())
+				.setMessage(ResponseEnum.SUCCESS.getMessage())
+				.setData(null);
+		return response;
+	}
 	
 	public static R<?> error(String message) {
 		R<Object> response = new R<>()

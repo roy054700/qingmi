@@ -11,10 +11,10 @@ import javax.servlet.http.HttpServletRequest;
  * @Date: 2020/12/22 18:42
  */
 public class TokenUtil {
-    public static String getTokenUserId() {
+    public static Long getTokenUserId() {
         String token = getRequest().getHeader("token");// 从 http 请求头中取出 token
         String userId = JWT.decode(token).getAudience().get(0);
-        return userId;
+        return Long.parseLong(userId);
     }
 
     /**

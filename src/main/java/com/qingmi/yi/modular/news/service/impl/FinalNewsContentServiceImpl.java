@@ -34,7 +34,7 @@ public class FinalNewsContentServiceImpl extends ServiceImpl<FinalNewsContentMap
     @Override
     public List<FinalNewsContent> selectPage(Page<FinalNewsContent> page, FinalNewsContent model,String top) {
         List<FinalNewsContent> list = finalNewsContentMapper.selectPage(page, model,new QueryWrapper<FinalNewsContent>());
-        if (list != null) {
+        if (list != null && list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 FinalNewsContent con = list.get(i);
                 QueryWrapper<FinalNewsPicture> ew = new QueryWrapper<FinalNewsPicture>();
@@ -42,14 +42,13 @@ public class FinalNewsContentServiceImpl extends ServiceImpl<FinalNewsContentMap
                 List<FinalNewsPicture> picList = finalNewsPictureMapper.selectList(ew);
                 con.setPicList(picList);
             }
+            List<FinalNewsContent> topContent = getTopContent(top);
+            if(topContent != null && topContent.size() > 0){
+                list.addAll(topContent);
+            }
         }else {
             return list;
         }
-        List<FinalNewsContent> topContent = getTopContent(top);
-        if(topContent != null && topContent.size() > 0){
-            list.addAll(topContent);
-        }
-
         return list;
         //return getList(list,getTopContent(top));
     }

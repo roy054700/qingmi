@@ -3,13 +3,13 @@
 <mapper namespace="com.qingmi.yi.security.mapper.UserMapper">
 
     <select id="findByUsername" resultType="com.qingmi.yi.security.model.SysUserAuthentication">
-      SELECT id,username,password
+      SELECT id,username
       FROM customer_user
       WHERE
       username=#{username}
     </select>
     <select id="findUserById" resultType="com.qingmi.yi.security.model.SysUserAuthentication">
-        SELECT username,password
+        SELECT username
         FROM customer_user
         WHERE
         id=#{id}
