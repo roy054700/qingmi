@@ -86,8 +86,31 @@ public class FollowController extends BaseController {
             IPage<CustomerUser> page = CustomerUserService.page(iPage,query);
             return ResponseUtils.success(page.getRecords());
         }else {
-            return ResponseUtils.success(null);
+            return ResponseUtils.success();
         }
     }
+
+
+    /**
+     * 添加关注 或者取消
+     */
+    @RequestMapping("/save")
+    public R<?> save(Long userId){
+        QueryWrapper<Follow> query = new QueryWrapper<>();
+        query.eq("user_id",userId);
+        query.eq("create_user_id",TokenUtil.getTokenUserId());
+        int count = followService.count(query);
+        if(count == 0){//判断是否关注，如果没有则添加，否则取消
+            Follow follow = new Follow();
+            follow.setUserId(userId);
+            follow.setCreateUserId(TokenUtil.getTokenUserId());
+            followService.save(follow);
+        }else {
+            followService.remove(query);
+        }
+        return ResponseUtils.success(count+"");
+    }
+
+
 
 }

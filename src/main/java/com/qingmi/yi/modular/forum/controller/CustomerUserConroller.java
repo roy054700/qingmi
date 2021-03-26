@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 用户
  * @Author: 李龙真
@@ -31,15 +34,18 @@ public class CustomerUserConroller extends BaseController {
      */
     @RequestMapping("/home")
     public R<?> home(){
-        CustomerUser user = customerUserService.getById(TokenUtil.getTokenUserId());
+        Long userId = TokenUtil.getTokenUserId();
+        CustomerUser user = customerUserService.getById(userId);
         //查询关注人数和被关注的人数
         QueryWrapper<Follow> query = new QueryWrapper<>();
-        query.eq("create_user_id", TokenUtil.getTokenUserId());
+        query.eq("create_user_id", userId);
         user.setFollowCount(followService.count(query));
         query = new QueryWrapper<>();
-        query.eq("user_id", TokenUtil.getTokenUserId());
+        query.eq("user_id", userId);
         user.setCoverFollowCount(followService.count(query));
-        return ResponseUtils.success(user);
+        List<CustomerUser> list = new ArrayList<>();
+        list.add(user);
+        return ResponseUtils.success(list);
     }
 
 }

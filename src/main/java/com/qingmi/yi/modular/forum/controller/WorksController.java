@@ -10,10 +10,7 @@ import com.qingmi.yi.common.utils.ResponseUtils;
 import com.qingmi.yi.common.utils.TokenUtil;
 import com.qingmi.yi.common.vo.R;
 import com.qingmi.yi.modular.forum.model.*;
-import com.qingmi.yi.modular.forum.service.CollectionService;
-import com.qingmi.yi.modular.forum.service.CustomerUserService;
-import com.qingmi.yi.modular.forum.service.FabulousService;
-import com.qingmi.yi.modular.forum.service.WorksService;
+import com.qingmi.yi.modular.forum.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +37,9 @@ public class WorksController extends BaseController {
     private CollectionService collectionService;
     @Autowired
     private FabulousService fabulousService;
+
+    @Autowired
+    private FollowService followService;
 
     /**
      * 我的收藏作品
@@ -97,16 +97,28 @@ public class WorksController extends BaseController {
         //查询作品是否被点赞
         QueryWrapper<Fabulous> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("work_id",id);
-        List<Fabulous> list1 = fabulousService.list(queryWrapper);
-        if(list1 != null && list1.size() > 0){
+        queryWrapper.eq("create_user_id",TokenUtil.getTokenUserId());
+        int count = fabulousService.count(queryWrapper);
+        if(count > 0){
             works.setLike(true);
         }
         //查询作品是否被收藏
         QueryWrapper<WorkCollection> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("work_id",id);
-        List<WorkCollection> list2 = collectionService.list(queryWrapper1);
-        if(list2 != null && list2.size() > 0){
+        queryWrapper1.eq("create_user_id",TokenUtil.getTokenUserId());
+        int count1 = collectionService.count(queryWrapper1);
+
+        if(count1 > 0){
             works.setConcern(true);
+        }
+
+        //查询作品的用户是否被当前用户关注
+        QueryWrapper<Follow> query = new QueryWrapper<>();
+        query.eq("user_id",works.getCreateUserId());
+        query.eq("create_user_id",TokenUtil.getTokenUserId());
+        int follow = followService.count(query);
+        if(follow > 0){
+            works.setFollow(true);
         }
         List<Works> list = new ArrayList<>();
         list.add(works);
@@ -124,7 +136,13 @@ public class WorksController extends BaseController {
         Integer pageNo = Integer.parseInt(map.get("pageNo").toString());
         Integer pageSize = Integer.parseInt(map.get("pageSize").toString());
         QueryWrapper<Works> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("work_type",Integer.parseInt(map.get("workType").toString()));
+
+        int workType = Integer.parseInt(map.get("workType").toString());
+        if(workType == 0){//查询我的作品
+            queryWrapper.eq("create_user_id",TokenUtil.getTokenUserId());
+        }else {//查询分类作品
+            queryWrapper.eq("work_type",workType);
+        }
         queryWrapper.orderByDesc("create_time");
         IPage<Works> iPage = new Page<>(pageNo,pageSize);
         IPage<Works> page = worksService.page(iPage,queryWrapper);
@@ -143,8 +161,7 @@ public class WorksController extends BaseController {
     public R<?> save(@RequestBody String body){
         JSONObject json =  JSONObject.parseObject(body);
         Works works = JSON.toJavaObject(json, Works.class);
-        works.setCreateUserId(1l);
-//        works.setCreateUserId(TokenUtil.getTokenUserId());
+        works.setCreateUserId(TokenUtil.getTokenUserId());
         worksService.save(works);
         return  ResponseUtils.success();
     }

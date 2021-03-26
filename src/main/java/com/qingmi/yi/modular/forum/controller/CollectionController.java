@@ -65,7 +65,7 @@ public class CollectionController extends BaseController {
     public R<?> like(Long workId){
         Fabulous fabulous = new Fabulous();
         fabulous.setWorkId(workId);
-        fabulous.setCreateUserId(1l);
+        fabulous.setCreateUserId(TokenUtil.getTokenUserId());
         boolean save = fabulousService.save(fabulous);
         return ResponseUtils.success();
     }

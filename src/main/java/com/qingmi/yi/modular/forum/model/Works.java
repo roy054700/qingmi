@@ -2,8 +2,6 @@ package com.qingmi.yi.modular.forum.model;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 
 import java.util.Date;
@@ -29,6 +27,12 @@ public class Works {
 
     @TableField(exist = false)
     public boolean concern = false;
+
+    /**
+     * 是否被关注
+     */
+    @TableField(exist = false)
+    public boolean follow = false;
     /**
      * 用户名
      */

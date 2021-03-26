@@ -31,7 +31,7 @@ public class CustomerUser {
     /**
      * 简介
      */
-    private String brief_introduction;
+    private String briefIntroduction;
     /**
      * 生日
      */
