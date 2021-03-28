@@ -59,7 +59,7 @@ public class CollectionController extends BaseController {
         return ResponseUtils.success(count);
     }
     /**
-     * 我收藏作品的个数
+     * 点赞
      */
     @RequestMapping("/like")
     public R<?> like(Long workId){

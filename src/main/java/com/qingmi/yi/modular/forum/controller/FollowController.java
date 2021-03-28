@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 关注
@@ -65,24 +67,24 @@ public class FollowController extends BaseController {
      * 关注我的人
      * @return
      */
-    @RequestMapping("/followMyUser")
-    public R<?> followMyUser(@RequestBody String json){
+    @RequestMapping("/attentionUser")
+    public R<?> attentionUser(@RequestBody String json){
         QueryWrapper<Follow> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", TokenUtil.getTokenUserId());
-        queryWrapper.select("create_user_id");
+        queryWrapper.eq("create_user_id", TokenUtil.getTokenUserId());
+        queryWrapper.select("user_id");
         queryWrapper.orderByDesc("create_time");
         List<Follow> list = followService.list(queryWrapper);
         if(list != null && list.size() > 0){
-            List<Long> userList = new ArrayList<>();
+            Set<Long> userList = new HashSet<>();
             for(int i=0;i<list.size();i++){
-                userList.add(list.get(i).getCreateUserId());
+                userList.add(list.get(i).getUserId());
             }
             JSONObject map =  JSONObject.parseObject(json);
             Integer pageNo = Integer.parseInt(map.get("pageNo").toString());
             Integer pageSize = Integer.parseInt(map.get("pageSize").toString());
             IPage<CustomerUser> iPage = new Page<>(pageNo,pageSize);
             QueryWrapper<CustomerUser> query = new QueryWrapper<>();
-            query.in("user_id",userList);
+            query.in("id",userList);
             IPage<CustomerUser> page = CustomerUserService.page(iPage,query);
             return ResponseUtils.success(page.getRecords());
         }else {

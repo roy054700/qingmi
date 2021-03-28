@@ -91,13 +91,14 @@ public class WorksController extends BaseController {
     @RequestMapping(value = "getById")
     public R<?> getById(Long id){
         Works works = worksService.getById(id);
+        Long userId = TokenUtil.getTokenUserId();
         CustomerUser customerUser = customerUserService.getById(works.getCreateUserId());
         works.setUsername(customerUser.getUsername());
         works.setHeadPortrait(customerUser.getHeadPortrait());
         //查询作品是否被点赞
         QueryWrapper<Fabulous> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("work_id",id);
-        queryWrapper.eq("create_user_id",TokenUtil.getTokenUserId());
+        queryWrapper.eq("create_user_id",userId);
         int count = fabulousService.count(queryWrapper);
         if(count > 0){
             works.setLike(true);
@@ -105,13 +106,15 @@ public class WorksController extends BaseController {
         //查询作品是否被收藏
         QueryWrapper<WorkCollection> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("work_id",id);
-        queryWrapper1.eq("create_user_id",TokenUtil.getTokenUserId());
+        queryWrapper1.eq("create_user_id",userId);
         int count1 = collectionService.count(queryWrapper1);
 
         if(count1 > 0){
             works.setConcern(true);
         }
-
+        if(works.getCreateUserId() == userId ){
+            works.setOneseif(true);
+        }
         //查询作品的用户是否被当前用户关注
         QueryWrapper<Follow> query = new QueryWrapper<>();
         query.eq("user_id",works.getCreateUserId());

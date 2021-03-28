@@ -27,6 +27,11 @@ public class Works {
 
     @TableField(exist = false)
     public boolean concern = false;
+    /**
+     * 是否是自己的
+     */
+    @TableField(exist = false)
+    public boolean oneseif = false;
 
     /**
      * 是否被关注
