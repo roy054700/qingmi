@@ -41,8 +41,7 @@ public class CollectionController extends BaseController {
     public R<?> save(Long workId){
         WorkCollection collection = new WorkCollection();
         collection.setWorkId(workId);
-        collection.setCreateUserId(1l);
-//        collection.setCreateUserId(TokenUtil.getTokenUserId());
+        collection.setCreateUserId(TokenUtil.getTokenUserId());
         boolean save = collectionService.save(collection);
         return ResponseUtils.success();
     }

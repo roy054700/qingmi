@@ -47,6 +47,7 @@ public class CommentController extends BaseController {
         IPage<Comment> page = new Page<>(0,10);
         QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("work_id",id);
+        queryWrapper.eq("parent_id",0);
         queryWrapper.orderByDesc("create_time");
         List<Comment> list = commentService.page(page,queryWrapper).getRecords();
         if(list != null) {
