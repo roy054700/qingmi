@@ -61,12 +61,26 @@ public class CommentController extends BaseController {
 
     /**
      * 查询全部评论，父子结构
-     * @param json
+     * @param bady
      * @return
      */
     @RequestMapping(value = "/pageList")
-    public R<?> pageList(@RequestBody String json){
-        JSONObject map =  JSONObject.parseObject(json);
+    public R<?> pageList(@RequestBody String bady){
+        JSONObject map =  JSONObject.parseObject(bady);
+        Long workId = Long.parseLong(map.get("workId").toString());
+        if(workId == 0l){
+            return answerList(map);
+        }else{
+            return commentList(map);
+        }
+    }
+
+    /**
+     * 查询某个作品全部评论，父子结构
+     * @param map
+     * @return
+     */
+    public R<?> commentList(JSONObject map){
         Integer pageNo = Integer.parseInt(map.get("pageNo").toString());
         Integer pageSize = Integer.parseInt(map.get("pageSize").toString());
         String workId = map.get("workId").toString();
@@ -89,23 +103,21 @@ public class CommentController extends BaseController {
             }
             for (int i = 0; i < pageList.size(); i++) {
                 CustomerUser customerUser = customerUserService.getById(pageList.get(i).getCreateUserId());
+                pageList.get(i).setUsername(customerUser.getUsername());
                 pageList.get(i).setHeadPortrait(customerUser.getHeadPortrait());
             }
         }
         return ResponseUtils.success(pageList);
     }
 
-
     /**
      * 查询我的回复，评论中存在我的回复
-     * @param param
+     * @param map
      * @return
      */
-    @RequestMapping(value = "/answer")
-    public R<?> answer(@RequestBody String param){
-        JSONObject json =  JSONObject.parseObject(param);
-        Integer pageNo = Integer.parseInt(json.get("pageNo").toString());
-        Integer pageSize = Integer.parseInt(json.get("pageSize").toString());
+    public R<?> answerList(JSONObject map){
+        Integer pageNo = Integer.parseInt(map.get("pageNo").toString());
+        Integer pageSize = Integer.parseInt(map.get("pageSize").toString());
         IPage<Comment> page = new Page<>(pageNo,pageSize);
         QueryWrapper<Comment> query = new QueryWrapper<>();
         query.eq("create_user_id",TokenUtil.getTokenUserId());
@@ -113,6 +125,7 @@ public class CommentController extends BaseController {
         query.select("parent_id");
         query.orderByDesc("create_time");
         List<Comment> list = commentService.list(query);
+        List<Comment> answerList = new ArrayList<>();
         if(list != null && list.size()>0){
             Set<Long> set = new HashSet<>();
             for(Comment comment : list){
@@ -122,14 +135,26 @@ public class CommentController extends BaseController {
             query.in("id",set);
             IPage<Comment> page1 = commentService.page(page, query);
             List<Comment> records = page1.getRecords();
+
             for(int i=0;i<records.size();i++){
+                Comment comment = records.get(i);
+                answerList.add(comment);
                 query = new QueryWrapper<>();
-                query.in("parent_id",records.get(i).getId());
-                records.get(i).setList(commentService.list(query));
+                query.in("parent_id",comment.getId());
+                answerList.addAll(commentService.list(query));
             }
-            return ResponseUtils.success(page1.getRecords());
+            //天假用户信息
+            for (int i = 0; i < answerList.size(); i++) {
+                CustomerUser customerUser = customerUserService.getById(answerList.get(i).getCreateUserId());
+                answerList.get(i).setUsername(customerUser.getUsername());
+                answerList.get(i).setHeadPortrait(customerUser.getHeadPortrait());
+            }
+
+            return ResponseUtils.success(answerList);
+        }else{
+            return ResponseUtils.success(answerList);
         }
-        return ResponseUtils.success(null);
+
     }
     /**
      * 添加评论
