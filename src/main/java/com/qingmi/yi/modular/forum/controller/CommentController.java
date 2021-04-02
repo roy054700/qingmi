@@ -166,6 +166,7 @@ public class CommentController extends BaseController {
     public R<?> save(@RequestBody String param){
         JSONObject json =  JSONObject.parseObject(param);
         Comment comment = JSON.toJavaObject(json, Comment.class);
+
         comment.setCreateUserId(TokenUtil.getTokenUserId());
         boolean b = commentService.save(comment);
         return  ResponseUtils.success();

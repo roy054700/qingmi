@@ -23,11 +23,22 @@ public class CustomerUser {
     /**
      * 微信id
      */
-    private String wechatId;
+    private String openid;
     /**
      * 昵称
      */
     private String nickname;
+    /**
+     * 性别
+     */
+    private int sex;
+
+    /**
+     * 性别名称
+     */
+
+    private String sexname;
+
     /**
      * 简介
      */
@@ -61,5 +72,7 @@ public class CustomerUser {
     //被关注的人数
     @TableField(exist = false)
     private int coverFollowCount;
+    @TableField(exist = false)
+    public String token;
 
 }

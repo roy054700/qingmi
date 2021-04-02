@@ -141,19 +141,23 @@ public class WorksController extends BaseController {
         QueryWrapper<Works> queryWrapper = new QueryWrapper<>();
 
         int workType = Integer.parseInt(map.get("workType").toString());
-        if(workType == 0){//查询我的作品
-            queryWrapper.eq("create_user_id",TokenUtil.getTokenUserId());
-        }else {//查询分类作品
-            queryWrapper.eq("work_type",workType);
+        Long userId = Long.parseLong(map.get("userId").toString());
+        if(userId == 0l){
+            if(workType == 0){//查询我的作品
+                queryWrapper.eq("create_user_id",TokenUtil.getTokenUserId());
+            }else {//查询分类作品
+                queryWrapper.eq("work_type",workType);
+            }
+        }else{//按用户id查询
+            queryWrapper.eq("create_user_id",userId);
         }
+
         queryWrapper.orderByDesc("create_time");
         IPage<Works> iPage = new Page<>(pageNo,pageSize);
         IPage<Works> page = worksService.page(iPage,queryWrapper);
         List<Works> list = page.getRecords();
         return ResponseUtils.success(list);
     }
-
-
 
     /**
      * 添加作品

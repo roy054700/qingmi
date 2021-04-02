@@ -1,0 +1,117 @@
+package com.qingmi.yi.common.exception.msg;
+
+public enum  CenterErrorMsg {
+    /**
+     * 用户账号不能为空
+     */
+    AccountIsNotExistsException(-1001,"用户账号不能为空!"),
+    PasswordIsNotExistsException(-1002,"密码不能为空!"),
+    AccountOrPasswordIsErrorException(-1002,"用户名或者密码错误!"),
+    PasswordLengthErrorException(-1003,"密码长度需在6-20位之间"),
+    CtAccountNotExistsException(-1004,"账号不存在"),
+    AccountIsFreezeException(-1005,"账号已冻结,暂无法使用!"),
+    BatchContIsErrorException(-1006,"批次生成的解锁码数量有误,请重新输入!"),
+    BatchValidDaysIsErrorException(-1007,"解锁码有效期限输入有误!"),
+    BatchUseDaysIsErrorException(-1008,"解锁码使用期限输入有误!"),
+    BatchSnTypeIsErrorException(-1009,"解锁码所属类型有误"),
+    BatchBookListIsErrorException(-1010,"解锁码激活的书本有误!"),
+    BatchCorpIdIsErrorException(-1011,"分发机构信息有误!"),
+    BatchNoIsErrorException(-1012,"批次编号有误!"),
+    BatchValidTimesIsErrorException(-1013,"有效使用次数有误!"),
+    CtAccountExistsException(-1014,"账号已存在"),
+    CtScanCodeIsNotExistsException(-1014,"解锁码不存在!"),
+    CtScanCodeIsNotHaveBooksException(-1015,"解锁码没有可解锁的有效书本!"),
+    CtScanCodeIsFreezeException(-1016,"解锁码冻结中,无法使用!"),
+    CtScanCodeIsStudentExistsException(-1017,"该解锁码你已使用过,不能重复使用!"),
+    NotBooksInsertExistsException(-1018,"没有书本可以解锁.."),
+    ScanCodeIsEmptyErrorException(-1019,"解锁码不能为空!"),
+    ScanCodeFreeStatusErrorException(-1020,"解锁码冻结状态异常!"),
+    CtCorpNotExistsException(-1019,"机构已不存在，请刷新页面"),
+    CtScanCodeValidTimesIsException(-1020,"该解锁码使用次数已使用完!"),
+    CtScanCodeValidDateIsException(-1021,"该解锁码已超过使用时间,不能使用!"),
+    CtScanCodeUseStatusException(-1022,"该解锁码已被使用,请使用其他的解锁码!"),
+    CtAccountNotDealerException(-1023,"该账号没有所属机构、不能做此操作!"),
+    CtAccountNotCorpException(-1024,"该账号所属机构已不存在、不能做此操作!"),
+    CtAccountCorpIsFreeException(-1025,"该账号所属机构已被冻结、请联系管理员!"),
+    CtAccountCorpIsLockException(-1026,"该账号所属机构已被锁定、请联系管理员!"),
+    DataNotExistsException(-1027,"数据已不存在、请刷新页面!"),
+    BookNameIsEmptyErrorException(-1030,"书本名称不能为空!"),
+    BookCoverUrlIsEmptyErrorException(-1031,"书本封面不能为空!"),
+    BookSeriesIdIsEmptyErrorException(-1032,"书本系列信息有误!"),
+    BookValidDayIsEmptyErrorException(-1033,"有效期限错误!"),
+    BookUseDayIsEmptyErrorException(-1034,"可使用天数有误!"),
+    BookValidTimesIsEmptyErrorException(-1035,"使用次数不足,请重新选择!"),
+    BookPriceIsEmptyErrorException(-1036,"价格信息有误!"),
+    BookIdIsEmptyErrorException(-1037,"书本ID信息有误!"),
+    BookIsEmptyErrorException(-1038,"该书本信息有误!"),
+    ParamNotNullException(-9998,"参数不能为空\n请重新输入!"),
+    OrderSnDetailInputsIsErrorException(-1039,"订单书本信息不能为空"),
+    OrderSnOrderIdIsErrorException(-1040,"订单编号信息有误!"),
+    ExperienceExistsException(-1041,"你已使用过体验码!\n请勿重复使用"),
+    BookStatusIsEmptyErrorException(-1042,"操作状态错误!"),
+    ReceiptMoneyNotEnoughException(-1043,"开票金额必须大于10000.00"),
+    OrderSnOrderStatusIsErrorException(-1045,"订单只有在待确认的状态下才可操作!"),
+    ReceiptStatusException(-1044,"只能操作待开票数据、请刷新页面重试"),
+    OrderSnReceiptStatusException(-1045,"有订单状态为待开票或已开票状态，\n不能重复开票!"),
+    orderSnCountExistsException(-1046,"解锁码数量必须超过100才能购买!"),
+    corporationUserIsEmptyException(-1047,"用户信息错误!"),
+    orderSnBookPriceException(-1048,"书本单价信息有误!"),
+    orderSnBookTolPriceException(-1049,"书本的总价信息有误!"),
+    CenterDataReportInputSeriesIdIsErrorException(-1050,"系列ID信息有误!"),
+    CenterDataReportInputCorpIdIdIsErrorException(-1051,"分发机构ID信息有误!"),
+    CenterDataReportInputDateIdIdIsErrorException(-1052,"开始时间和结束时间信息错误!"),
+    ScanCodeUseStatusErrorException(-1053,"该解锁码已使用,不能进行该操作!"),
+    TextbookNotNullException(-1054,"该教材不存在!"),
+    TextbookExistsException(-1055,"教材已经进行过该操作!"),
+    TextbookDealerStatusException(-1056,"授权状态异常!"),
+    TextbookDealerIsNotEmptyException(-1057,"邀请码异常!"),
+    CorporationIsExistTextbookException(-1058,"该机构已经绑定过邀请码!"),
+    InsertDataException(-9998,"数据保存错误!"),
+    OrderSnListInputsIsErrorException(-1059,"订单选择不能为空!"),
+    RevModuleIsExistOnName(-1060,"该名称的模块已经存在!"),
+    RevModuleStatusIsErrorException(-1061,"模块状态错误!"),
+    RevModuleSeriesExistsException(-1062,"该单词卡集已经存在!"),
+    RevModuleWordSeriesIsExistOnName(-1063,"单词卡集不存在!"),
+    RevModuleWordIsExistOnName(-1064,"单词卡已经存在!"),
+    RevModuleWordIsNotExistOnName(-1065,"该单词卡不存在!"),
+    RevModuleWorkSeriesIsExistsException(-1066,"该练习已经存在!"),
+    RevModuleWorkSeriesIsNotExistsException(-1067,"在练习不存在!"),
+    RevModuleWorkSeriesQuestionIsNotExistsException(-1068,"该题目内容不存在!"),
+    RRevModuleEarSeriesIsExistsException(-1069,"该内容已经存在!"),
+    RRevModuleEarSeriesIsNotExistsException(-1070,"该内容不存在!"),
+    RRevModulePictureIsExistsException(-1071,"该名称的绘本已经存在!"),
+    RRevModulePictureIsNotExistsException(-1072,"该id的绘本不存在,请检查!"),
+    RRevModuleReadIsExistsException(-1073,"该名称的内容已经存在!"),
+    RRevModuleReadIsNotExistsException(-1074,"该id的内容不存在!"),
+    CtScanCodeIsNotUsedException(-1075,"解锁码未使用!"),
+    AuthCodeBookIsNotNullException(-1076,"购买书本信息不能为空!"),
+    AuthCodeCommodityIsNotNullException(-1077,"商品信息不能为空!"),
+    AuthCodeCorpIsNotNullException(-1078,"分发单位信息不能为空!"),
+    CtAuthCodeIsErrorException(-1079,"授权凭证有误!"),
+    CtAuthCodeBatchIsErrorException(-1080,"授权凭证信息有误!"),
+    CtAuthCodeAuthorityIsErrorException(-1081,"用户权限不足,无法操作!"),
+    CtAuthCodeUseStatusIsErrorException(-1082,"该凭证已经分配,不能重复分配"),
+    LessonIsEmptyErrorException(-1083,"该在线课程信息有误！"),
+    CtCorpNotFoundException(-1084,"该出版社不存在！"),
+    CtTextbookNotFoundException(-1085,"该教材不存在！"),
+    LessonDataErrorException(-1086,"数据异常！"),
+    LessonParamErrorException(-1087,"参数错误！"),
+    LessonNotFoundException(-1088,"该在线课程不存在！"),
+    LessonModuleNotFoundException(-1089,"该模块不存在！"),
+    OsFileUploadException(-1090,"上传出错！"),
+    TokenIsFreezeException(-1099,"账号登陆已过期,请重新登陆!");
+    private int code;
+    private String msg;
+    CenterErrorMsg(int code, String msg){
+        this.code = code;
+        this.msg = msg;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+}
