@@ -72,7 +72,5 @@ public class CustomerUser {
     //被关注的人数
     @TableField(exist = false)
     private int coverFollowCount;
-    @TableField(exist = false)
-    public String token;
 
 }

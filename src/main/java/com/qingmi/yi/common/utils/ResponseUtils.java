@@ -20,11 +20,19 @@ public class ResponseUtils {
 				      .setData(data);
 		return response;
 	}
-
+	//绑定手机号
+	public static R<?> phone(String message) {
+		R<Object> response = new R<>()
+				.setCode(ResponseEnum.PHONE.getCode())
+				.setMessage(message)
+				.setData(null);
+		return response;
+	}
 	public static R<?> success(String message) {
 		R<Object> response = new R<>()
 				.setCode(ResponseEnum.SUCCESS.getCode())
-				.setMessage(message);
+				.setMessage(message)
+				.setData(null);
 		return response;
 	}
 

@@ -11,6 +11,7 @@ import com.qingmi.yi.modular.forum.model.CustomerUser;
 import com.qingmi.yi.modular.forum.model.Follow;
 import com.qingmi.yi.modular.forum.service.CustomerUserService;
 import com.qingmi.yi.modular.forum.service.FollowService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,15 +37,17 @@ public class CustomerUserConroller extends BaseController {
      * @return
      */
     @RequestMapping("/home")
-    public R<?> home(){
-        Long userId = TokenUtil.getTokenUserId();
-        CustomerUser user = customerUserService.getById(userId);
+    public R<?> home(Long id){
+        if(id == 0l){
+            id = TokenUtil.getTokenUserId();
+        }
+        CustomerUser user = customerUserService.getById(id);
         //查询关注人数和被关注的人数
         QueryWrapper<Follow> query = new QueryWrapper<>();
-        query.eq("create_user_id", userId);
+        query.eq("create_user_id", id);
         user.setFollowCount(followService.count(query));
         query = new QueryWrapper<>();
-        query.eq("user_id", userId);
+        query.eq("user_id", id);
         user.setCoverFollowCount(followService.count(query));
         List<CustomerUser> list = new ArrayList<>();
         list.add(user);
@@ -61,7 +64,6 @@ public class CustomerUserConroller extends BaseController {
     public R<?> register(@RequestBody String body) {
         JSONObject json = JSONObject.parseObject(body);
         CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
-        List<CustomerUser> list = new ArrayList<>();
         QueryWrapper<CustomerUser> query = new QueryWrapper<>();
         query.eq("openid",user.getOpenid());
         if(customerUserService.count(query) == 0){
@@ -73,16 +75,24 @@ public class CustomerUserConroller extends BaseController {
             customerUserService.save(user);
         }
         CustomerUser one = customerUserService.getOne(query);
-        //查询关注人数
-        QueryWrapper<Follow> query1 = new QueryWrapper<>();
-        query1.eq("create_user_id", one.getId());
-        one.setFollowCount(followService.count(query1));
-        //和被关注的人数
-        query1 = new QueryWrapper<>();
-        query1.eq("user_id", one.getId());
-        one.setCoverFollowCount(followService.count(query1));
-        one.setToken(TokenUtil.getToken(one));
-        list.add(one);
-        return ResponseUtils.success(list);
+        //如果当前用户没有绑定手机号，提示绑定手机号
+//        if(StringUtils.isEmpty(one.getPhoneNumber())){
+//            return ResponseUtils.phone(TokenUtil.getToken(one));
+//        }
+        return ResponseUtils.success(TokenUtil.getToken(one));
     }
+
+    /**
+     * 当前微信用户不存在即插入并查询，存在则查询
+     * @param body
+     * @return
+     */
+    @RequestMapping(value = "/update")
+    public R<?> update(@RequestBody String body){
+        JSONObject json = JSONObject.parseObject(body);
+        CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
+        customerUserService.updateById(user);
+        return ResponseUtils.success();
+    }
+
 }

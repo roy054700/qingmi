@@ -8,6 +8,8 @@ import lombok.Getter;
 public enum ResponseEnum {
 	//成功响应
 	SUCCESS(200,"成功"),
+	//成功响应,绑定手机号
+	PHONE(201,"成功"),
 	//失败响应
 	FAIL(400,"失败" ),
 	//参数为空
