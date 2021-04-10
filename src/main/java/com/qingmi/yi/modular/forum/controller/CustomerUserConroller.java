@@ -83,7 +83,7 @@ public class CustomerUserConroller extends BaseController {
     }
 
     /**
-     * 当前微信用户不存在即插入并查询，存在则查询
+     * 更新
      * @param body
      * @return
      */

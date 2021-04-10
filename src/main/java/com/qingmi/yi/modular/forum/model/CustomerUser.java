@@ -61,6 +61,11 @@ public class CustomerUser {
      * 头像
      */
     private String headPortrait;
+
+    /**
+     * bitmap头像
+     */
+    private String bitmapHead;
     /**
      * 账号是否冻结 0 正常，1冻结
      */

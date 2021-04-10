@@ -33,13 +33,19 @@ public class WorksController extends BaseController {
     private WorksService worksService;
     @Autowired
     private CustomerUserService customerUserService;
+    //收藏
     @Autowired
     private CollectionService collectionService;
+    //点赞
     @Autowired
     private FabulousService fabulousService;
 
     @Autowired
     private FollowService followService;
+    //评论
+    @Autowired
+    private CommentService commentService;
+
 
     /**
      * 我的收藏作品
@@ -109,12 +115,8 @@ public class WorksController extends BaseController {
         queryWrapper1.eq("create_user_id",userId);
         int count1 = collectionService.count(queryWrapper1);
 
-        if(count1 > 0){
-            works.setConcern(true);
-        }
-        if(works.getCreateUserId() == userId ){
-            works.setOneseif(true);
-        }
+        works.setConcern(count1 > 0);
+        works.setOneseif(works.getCreateUserId().equals(userId));
         //查询作品的用户是否被当前用户关注
         QueryWrapper<Follow> query = new QueryWrapper<>();
         query.eq("user_id",works.getCreateUserId());
@@ -142,7 +144,7 @@ public class WorksController extends BaseController {
 
         int workType = Integer.parseInt(map.get("workType").toString());
         Long userId = Long.parseLong(map.get("userId").toString());
-        if(userId == 0l){
+        if(userId.equals(0l)){
             if(workType == 0){//查询我的作品
                 queryWrapper.eq("create_user_id",TokenUtil.getTokenUserId());
             }else {//查询分类作品
@@ -174,13 +176,22 @@ public class WorksController extends BaseController {
     }
 
     /**
-     * 删除作品
+     * 删除作品及评论，收藏，点赞
      * @param id
      * @return
      */
     @RequestMapping(value = "delete")
     public R<?> delete(Long id){
          worksService.removeById(id);
+         QueryWrapper<Comment> comment = new QueryWrapper<>();
+        comment.eq("work_id",id);
+        commentService.remove(comment);//删除评论
+        QueryWrapper<WorkCollection> collection = new QueryWrapper<>();
+        collection.eq("work_id",id);
+        collectionService.remove(collection);//删除收藏
+        QueryWrapper<Fabulous> fabulous = new QueryWrapper<>();
+        fabulous.eq("work_id",id);
+        fabulousService.remove(fabulous);//删除点赞
         return  ResponseUtils.success();
     }
 }
