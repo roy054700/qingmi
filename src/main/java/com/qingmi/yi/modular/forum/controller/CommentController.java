@@ -112,7 +112,7 @@ public class CommentController extends BaseController {
     }
 
     /**
-     * 查询我的回复，评论中存在我的回复
+     * 查询我的评论，某人发布的评论
      * @param map
      * @return
      */
@@ -122,39 +122,30 @@ public class CommentController extends BaseController {
         IPage<Comment> page = new Page<>(pageNo,pageSize);
         QueryWrapper<Comment> query = new QueryWrapper<>();
         query.eq("create_user_id",TokenUtil.getTokenUserId());
-        query.ne("parent_id",0);
-        query.select("parent_id");
+        query.eq("parent_id",0);
         query.orderByDesc("create_time");
-        List<Comment> list = commentService.list(query);
+        //查询我发布的评论
         List<Comment> answerList = new ArrayList<>();
+        IPage<Comment> page1 = commentService.page(page, query);
+        List<Comment> list = page1.getRecords();
         if(list != null && list.size()>0){
-            Set<Long> set = new HashSet<>();
-            for(Comment comment : list){
-                set.add(comment.getParentId());
-            }
-            query = new QueryWrapper<>();
-            query.in("id",set);
-            IPage<Comment> page1 = commentService.page(page, query);
-            List<Comment> records = page1.getRecords();
-
-            for(int i=0;i<records.size();i++){
-                Comment comment = records.get(i);
+            for(int i=0;i<list.size();i++){
+                Comment comment = list.get(i);
                 answerList.add(comment);
                 query = new QueryWrapper<>();
-                query.in("parent_id",comment.getId());
+                query.eq("parent_id",comment.getId());
                 answerList.addAll(commentService.list(query));
             }
-            //天假用户信息
+            //添加用户信息
             for (int i = 0; i < answerList.size(); i++) {
                 CustomerUser customerUser = customerUserService.getById(answerList.get(i).getCreateUserId());
                 answerList.get(i).setUsername(customerUser.getUsername());
                 answerList.get(i).setHeadPortrait(customerUser.getHeadPortrait());
             }
 
-            return ResponseUtils.success(answerList);
-        }else{
-            return ResponseUtils.success(answerList);
         }
+        return ResponseUtils.success(answerList);
+
 
     }
     /**

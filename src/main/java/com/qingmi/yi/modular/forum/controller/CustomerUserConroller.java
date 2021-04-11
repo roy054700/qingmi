@@ -42,6 +42,9 @@ public class CustomerUserConroller extends BaseController {
             id = TokenUtil.getTokenUserId();
         }
         CustomerUser user = customerUserService.getById(id);
+        if(user != null && StringUtils.isNotEmpty(user.getBitmapHead())){
+            user.setHeadPortrait(user.getBitmapHead());
+        }
         //查询关注人数和被关注的人数
         QueryWrapper<Follow> query = new QueryWrapper<>();
         query.eq("create_user_id", id);
