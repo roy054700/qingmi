@@ -92,7 +92,7 @@ public class WuLiuUtils {
             year = Integer.parseInt(split[0]);
             int month = Integer.parseInt(split[1]);
             int day = Integer.parseInt(split[2]);
-            now.set(year,month,day);
+            now.set(year,month-1,day);
         }
         int daHan = sTermDate(year,1,0);
         String date = dateFormat.format(now.getTime());
@@ -144,7 +144,7 @@ public class WuLiuUtils {
             year = Integer.parseInt(split[0]);
             int month = Integer.parseInt(split[1]);
             int day = Integer.parseInt(split[2]);
-            now.set(year,month,day);
+            now.set(year,month-1,day);
         }
         int daHan = sTermDate(year,1,0);
         String date = dateFormat.format(now.getTime());
@@ -219,7 +219,7 @@ public class WuLiuUtils {
             month = Integer.parseInt(split[1]);
             day = Integer.parseInt(split[2]);
         }
-        calendar_now.set(year, month, day);
+        calendar_now.set(year, month-1, day);
         long date_now = calendar_now.getTime().getTime();
         //获取1900-01-31的时间
         Calendar calendar_ago = Calendar.getInstance();
@@ -306,7 +306,7 @@ public class WuLiuUtils {
     }
 
     public static void main(String[] args) {
-//        int yun = getWuYun();
+        int yun = getWuYun("2021,3,15");
 //        int qi = getLiuQi();
 //        String s = getGanZhi();
 //        System.out.println("s="+s);
