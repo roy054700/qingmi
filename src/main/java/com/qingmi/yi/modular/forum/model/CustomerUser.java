@@ -21,6 +21,16 @@ public class CustomerUser {
      */
     private String username;
     /**
+     * 密码
+     */
+    private String password;
+
+    /**
+     * 新密码
+     */
+    @TableField(exist = false)
+    private String newPassword;
+    /**
      * 微信id
      */
     private String openid;
@@ -77,5 +87,9 @@ public class CustomerUser {
     //被关注的人数
     @TableField(exist = false)
     private int coverFollowCount;
+
+    //验证码
+    @TableField(exist = false)
+    private String code;
 
 }

@@ -1,8 +1,17 @@
 spring:
   profiles:
-    active: prod
+    active: dev
 
 # security 使能
 security:
   basic:
     enabled: false
+
+# 短信验证 参数
+shortmmessage:
+  secretId: AKIDf6LK4dU85ufOs5jNAgx3uUnkEcsuphha
+  secretKey: JPPCi04rMXR4QYWMxgAUdYO4UwVw98sN
+  endpoint: sms.tencentcloudapi.com
+  templateID: 921010
+  smsSdkAppid: 1400502936
+  sign: 上海清谧文化交流中心

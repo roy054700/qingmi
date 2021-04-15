@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.qingmi.yi.common.base.BaseController;
-import com.qingmi.yi.common.utils.ResponseUtils;
-import com.qingmi.yi.common.utils.TokenUtil;
+import com.qingmi.yi.common.enums.ResponseEnum;
+import com.qingmi.yi.common.utils.*;
 import com.qingmi.yi.common.vo.R;
 import com.qingmi.yi.modular.forum.model.CustomerUser;
 import com.qingmi.yi.modular.forum.model.Follow;
@@ -97,5 +97,154 @@ public class CustomerUserConroller extends BaseController {
         customerUserService.updateById(user);
         return ResponseUtils.success();
     }
+
+    /**
+     * 验证用户名是否存在
+     * @return
+     */
+    @RequestMapping(value = "/username")
+    public R<?> repeat(String username){
+        QueryWrapper<CustomerUser> query = new QueryWrapper<>();
+        query.eq("username",username);
+        int count = customerUserService.count(query);
+        if(count == 0){
+            return ResponseUtils.success();
+        }else {
+            return ResponseUtils.success(ResponseEnum.USER_NAME);
+        }
+    }
+
+    /**
+     * 用户注册
+     * @return
+     */
+    @RequestMapping(value = "/userRegister")
+    public R<?> userRegister(@RequestBody String body){
+        JSONObject json = JSONObject.parseObject(body);
+        CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
+        //匹配验证码
+        if(!VerificationCode.matchingCode(user.getCode(),user.getPhoneNumber())){
+            return ResponseUtils.success(ResponseEnum.VERIFICATION_CODE_ERROR);
+        }
+        String pass = BcryptPasswordEncoderUtils.encode(user.getPassword());//加密
+        user.setPassword(pass);
+        customerUserService.save(user);
+        return ResponseUtils.success();
+    }
+
+    /**
+     * 登录——用户名和密码
+     * @param body
+     * @return
+     */
+    @RequestMapping(value = "/login")
+    public R<?> login(@RequestBody String body) {
+        JSONObject json = JSONObject.parseObject(body);
+        CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
+        String pass = BcryptPasswordEncoderUtils.encode(user.getPassword());//加密
+        QueryWrapper<CustomerUser> query = new QueryWrapper<>();
+        query.eq("username",user.getUsername());
+        query.eq("password",pass);
+        CustomerUser one = customerUserService.getOne(query);
+        if(one == null){
+            return ResponseUtils.success(ResponseEnum.LOGIN_ERROR);
+        }
+        return ResponseUtils.success(TokenUtil.getToken(one));
+    }
+
+    /**
+     * 使用手机号登录
+     */
+    @RequestMapping(value = "/phoneLogin")
+    public R<?> phoneLogin(@RequestBody String body) {
+        JSONObject json = JSONObject.parseObject(body);
+        CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
+        //匹配验证码
+        if(!VerificationCode.matchingCode(user.getCode(),user.getPhoneNumber())){
+            return ResponseUtils.success(ResponseEnum.VERIFICATION_CODE_ERROR);
+        }
+
+        QueryWrapper<CustomerUser> query = new QueryWrapper<>();
+        query.eq("phone_number",user.getPhoneNumber());
+        CustomerUser one = customerUserService.getOne(query);
+
+        return ResponseUtils.success(TokenUtil.getToken(one));
+    }
+
+    /**
+     * 用户绑定手机号
+     * @return
+     */
+    @RequestMapping(value = "/bindingPhone")
+    public R<?> bindingPhone(@RequestBody String body){
+        JSONObject json = JSONObject.parseObject(body);
+        CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
+        customerUserService.updateById(user);
+        return ResponseUtils.success();
+    }
+
+    /**
+     * 更新密码
+     */
+    @RequestMapping(value = "/updatePassword")
+    public R<?> updatePassword(@RequestBody String body){
+        JSONObject json = JSONObject.parseObject(body);
+        CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
+        String encode = BcryptPasswordEncoderUtils.encode(user.getPassword());
+        QueryWrapper<CustomerUser> query = new QueryWrapper<>();
+        query.eq("username",user.getUsername());
+        query.eq("password",encode);
+        int count = customerUserService.count(query);
+        if(count == 0){//用户名或者密码不正确
+            return ResponseUtils.success(ResponseEnum.LOGIN_ERROR);
+        }else {
+            user.setId(TokenUtil.getTokenUserId());
+            encode = BcryptPasswordEncoderUtils.encode(user.getNewPassword());
+            user.setPassword(encode);
+            customerUserService.updateById(user);
+            return ResponseUtils.success();
+        }
+    }
+    /**
+     * 用户获取手机验证码
+     * 根据 type 判断是登录，注册，绑定手机号
+     * type 1 登录，2 注册，3 绑定手机号
+     * @return
+     */
+    @RequestMapping(value = "/getCode")
+    public R<?> getCode(int type,String phoneNumber){
+        if(type == 1){//登录
+            //判断当前手机号是否注册
+            QueryWrapper<CustomerUser> query = new QueryWrapper<>();
+            query.eq("phone_number",phoneNumber);
+            int count = customerUserService.count(query);
+            if(count == 0){
+                return ResponseUtils.success(ResponseEnum.PHONE_NO_REGISTER);
+            }else{
+                if(StringUtils.isNotEmpty(phoneNumber)){
+                    VerificationCode.send(phoneNumber);
+                }
+            }
+        }else if(type == 2){//注册
+            //判断当前手机号是否注册
+            QueryWrapper<CustomerUser> query = new QueryWrapper<>();
+            query.eq("phone_number",phoneNumber);
+            int count = customerUserService.count(query);
+            if(count != 0){
+                return ResponseUtils.success(ResponseEnum.PHONE_YES_REGISTER);
+            }else{
+                if(StringUtils.isNotEmpty(phoneNumber)){
+                    VerificationCode.send(phoneNumber);
+                }
+            }
+        }else if(type == 3){//绑定手机号
+            if(StringUtils.isNotEmpty(phoneNumber)){
+                VerificationCode.send(phoneNumber);
+            }
+        }
+
+        return ResponseUtils.success();
+    }
+
 
 }

@@ -26,7 +26,7 @@ public class BcryptPasswordEncoderUtils {
     }
 
     public static void main(String[] args) {
-
-        System.out.print("" + encode("GengYu120!@#"));
+        String encode = encode("123");
+        System.out.print("" + encode.length());
     }
 }
