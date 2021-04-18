@@ -97,7 +97,7 @@ public class DesUtils {
     }
 
     public static void main(String[] args) {
-        String ss = "12345678";
+        String ss = "tt";
         String encodeSS = encode(ss);
         System.out.println(encodeSS);
         String decodeSS = decode(encodeSS);

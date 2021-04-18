@@ -14,4 +14,6 @@ shortmmessage:
   endpoint: sms.tencentcloudapi.com
   templateID: 921010
   smsSdkAppid: 1400502936
-  sign: 上海清谧文化交流中心
+  sign: 十月历
+
+

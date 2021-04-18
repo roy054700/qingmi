@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +34,10 @@ public class CustomerUserConroller extends BaseController {
     private CustomerUserService customerUserService;
     @Autowired
     private FollowService followService;
+
+    @Autowired
+    private ShortMmessage shortMmessage ;//短信配置数据
+
     /**
      * 个人主页
      * @return
@@ -122,11 +128,12 @@ public class CustomerUserConroller extends BaseController {
     public R<?> userRegister(@RequestBody String body){
         JSONObject json = JSONObject.parseObject(body);
         CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
+
         //匹配验证码
         if(!VerificationCode.matchingCode(user.getCode(),user.getPhoneNumber())){
             return ResponseUtils.success(ResponseEnum.VERIFICATION_CODE_ERROR);
         }
-        String pass = BcryptPasswordEncoderUtils.encode(user.getPassword());//加密
+        String pass = DesUtils.encode(user.getPassword());//加密
         user.setPassword(pass);
         customerUserService.save(user);
         return ResponseUtils.success();
@@ -141,7 +148,7 @@ public class CustomerUserConroller extends BaseController {
     public R<?> login(@RequestBody String body) {
         JSONObject json = JSONObject.parseObject(body);
         CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
-        String pass = BcryptPasswordEncoderUtils.encode(user.getPassword());//加密
+        String pass = DesUtils.encode(user.getPassword());//加密
         QueryWrapper<CustomerUser> query = new QueryWrapper<>();
         query.eq("username",user.getUsername());
         query.eq("password",pass);
@@ -153,7 +160,7 @@ public class CustomerUserConroller extends BaseController {
     }
 
     /**
-     * 使用手机号登录
+     * 使用手机号登录，用户不存在就注册
      */
     @RequestMapping(value = "/phoneLogin")
     public R<?> phoneLogin(@RequestBody String body) {
@@ -163,10 +170,13 @@ public class CustomerUserConroller extends BaseController {
         if(!VerificationCode.matchingCode(user.getCode(),user.getPhoneNumber())){
             return ResponseUtils.success(ResponseEnum.VERIFICATION_CODE_ERROR);
         }
-
         QueryWrapper<CustomerUser> query = new QueryWrapper<>();
         query.eq("phone_number",user.getPhoneNumber());
         CustomerUser one = customerUserService.getOne(query);
+        if(one == null){
+            customerUserService.save(user);
+            one = customerUserService.getOne(query);
+        }
 
         return ResponseUtils.success(TokenUtil.getToken(one));
     }
@@ -179,6 +189,10 @@ public class CustomerUserConroller extends BaseController {
     public R<?> bindingPhone(@RequestBody String body){
         JSONObject json = JSONObject.parseObject(body);
         CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
+        //匹配验证码
+        if(!VerificationCode.matchingCode(user.getCode(),user.getPhoneNumber())){
+            return ResponseUtils.success(ResponseEnum.VERIFICATION_CODE_ERROR);
+        }
         customerUserService.updateById(user);
         return ResponseUtils.success();
     }
@@ -190,7 +204,7 @@ public class CustomerUserConroller extends BaseController {
     public R<?> updatePassword(@RequestBody String body){
         JSONObject json = JSONObject.parseObject(body);
         CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
-        String encode = BcryptPasswordEncoderUtils.encode(user.getPassword());
+        String encode = DesUtils.encode(user.getPassword());
         QueryWrapper<CustomerUser> query = new QueryWrapper<>();
         query.eq("username",user.getUsername());
         query.eq("password",encode);
@@ -199,7 +213,7 @@ public class CustomerUserConroller extends BaseController {
             return ResponseUtils.success(ResponseEnum.LOGIN_ERROR);
         }else {
             user.setId(TokenUtil.getTokenUserId());
-            encode = BcryptPasswordEncoderUtils.encode(user.getNewPassword());
+            encode = DesUtils.encode(user.getNewPassword());
             user.setPassword(encode);
             customerUserService.updateById(user);
             return ResponseUtils.success();
@@ -211,40 +225,36 @@ public class CustomerUserConroller extends BaseController {
      * type 1 登录，2 注册，3 绑定手机号
      * @return
      */
+
     @RequestMapping(value = "/getCode")
-    public R<?> getCode(int type,String phoneNumber){
+    public R<?> getCode(int type, String phoneNumber){
         if(type == 1){//登录
             //判断当前手机号是否注册
             QueryWrapper<CustomerUser> query = new QueryWrapper<>();
             query.eq("phone_number",phoneNumber);
-            int count = customerUserService.count(query);
-            if(count == 0){
-                return ResponseUtils.success(ResponseEnum.PHONE_NO_REGISTER);
-            }else{
-                if(StringUtils.isNotEmpty(phoneNumber)){
-                    VerificationCode.send(phoneNumber);
-                }
+            if(StringUtils.isNotEmpty(phoneNumber)) {
+                VerificationCode.send(shortMmessage, phoneNumber);
             }
         }else if(type == 2){//注册
             //判断当前手机号是否注册
             QueryWrapper<CustomerUser> query = new QueryWrapper<>();
             query.eq("phone_number",phoneNumber);
             int count = customerUserService.count(query);
-            if(count != 0){
+            if(count != 0){//手机已经注册
                 return ResponseUtils.success(ResponseEnum.PHONE_YES_REGISTER);
             }else{
                 if(StringUtils.isNotEmpty(phoneNumber)){
-                    VerificationCode.send(phoneNumber);
+                    VerificationCode.send(shortMmessage,phoneNumber);
                 }
             }
         }else if(type == 3){//绑定手机号
             if(StringUtils.isNotEmpty(phoneNumber)){
-                VerificationCode.send(phoneNumber);
+                VerificationCode.send(shortMmessage,phoneNumber);
             }
         }
-
         return ResponseUtils.success();
     }
+    //用户名是否占用，手机号是否注册
 
 
 }

@@ -27,6 +27,8 @@ public class BcryptPasswordEncoderUtils {
 
     public static void main(String[] args) {
         String encode = encode("123");
-        System.out.print("" + encode.length());
+        System.out.println("" + encode);
+         encode = encode("123");
+        System.out.print("" + encode);
     }
 }

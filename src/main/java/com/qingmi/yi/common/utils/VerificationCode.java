@@ -8,9 +8,9 @@ import com.tencentcloudapi.common.profile.HttpProfile;
 import com.tencentcloudapi.sms.v20190711.SmsClient;
 
 import com.tencentcloudapi.sms.v20190711.models.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 手机验证码
@@ -18,25 +18,24 @@ import javax.servlet.http.HttpSession;
  * @Date: 2021/4/14 15:41
  */
 public class VerificationCode {
-    public static HttpServletRequest request = HttpServletUtil.getRequest();
-    @Autowired
-    public static ShortMmessage shortMmessage ;
+    private static Map<String,String> map = new HashMap();
 
     /**
      * 发送手机验证码
      * @param phoneNumber 手机号
      * @return
      */
-    public static Object send(String phoneNumber){
-        phoneNumber="86"+phoneNumber;
+    public static void send(ShortMmessage shortMmessage,String phoneNumber){
+
         String code = getCode();
         //保存验证码和手机号到Session
         save(code,phoneNumber);
+        phoneNumber="86"+phoneNumber;
         try{
-            Credential cred = new Credential(shortMmessage.secretId, shortMmessage.secretKey);
+            Credential cred = new Credential(shortMmessage.getSecretId(), shortMmessage.getSecretKey());
 
             HttpProfile httpProfile = new HttpProfile();
-            httpProfile.setEndpoint(shortMmessage.endpoint);
+            httpProfile.setEndpoint(shortMmessage.getEndpoint());
 
             ClientProfile clientProfile = new ClientProfile();
             clientProfile.setHttpProfile(httpProfile);
@@ -47,13 +46,13 @@ public class VerificationCode {
             String[] phoneNumberSet1 = {phoneNumber};
             req.setPhoneNumberSet(phoneNumberSet1);
 
-            req.setTemplateID(shortMmessage.templateID);
-            req.setSign(shortMmessage.sign);
+            req.setTemplateID(shortMmessage.getTemplateID());
+            req.setSign(shortMmessage.getSign());
 
             String[] templateParamSet1 = {code};//验证码需要生成
             req.setTemplateParamSet(templateParamSet1);
 
-            req.setSmsSdkAppid(shortMmessage.smsSdkAppid);
+            req.setSmsSdkAppid(shortMmessage.getSmsSdkAppid());
 
             SendSmsResponse resp = client.SendSms(req);
 
@@ -62,7 +61,6 @@ public class VerificationCode {
             System.out.println(e.toString());
         }
 
-        return null;
     }
 
     /**
@@ -71,15 +69,14 @@ public class VerificationCode {
      */
     public static String getCode(){
         String s = Long.toString(System.nanoTime());
-        return s.substring(s.length(),-6);
+        return s.substring(s.length()-6);
     }
 
     /**
      * 保存验证码和手机号到session
      */
     public static void save(String code,String phoneNumber){
-        HttpSession session = request.getSession();
-        session.setAttribute(phoneNumber,code);
+        map.put(phoneNumber,code);
     }
 
     /**
@@ -89,14 +86,13 @@ public class VerificationCode {
      * @return
      */
     public static boolean matchingCode(String code,String phoneNumber){
-        HttpSession session = request.getSession();
-        String attribute = session.getAttribute(phoneNumber).toString();
+        String attribute = map.get(phoneNumber);
 
         return code.equals(attribute);
     }
     public static void main(String [] args) {
 
-        send("13585825640");
+        //send("13585825640");
 
 //        try{
 //

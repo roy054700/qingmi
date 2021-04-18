@@ -33,7 +33,7 @@ public class TokenUtil {
         String token = "";
 
         token = JWT.create().withAudience(user.getId().toString()).withIssuedAt(start).withExpiresAt(end)
-                .sign(Algorithm.HMAC256(user.getOpenid()));
+                .sign(Algorithm.HMAC256(user.getId().toString()));
         return token;
     }
 

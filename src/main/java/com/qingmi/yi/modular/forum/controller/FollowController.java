@@ -60,7 +60,7 @@ public class FollowController extends BaseController {
             IPage<CustomerUser> page = CustomerUserService.page(iPage,query);
             return ResponseUtils.success(page.getRecords());
         }else {
-            return ResponseUtils.success(null);
+            return ResponseUtils.success();
         }
     }
     /**

@@ -35,7 +35,13 @@ public class ResponseUtils {
 				.setData(null);
 		return response;
 	}
-
+	public static R<?> success(ResponseEnum responseEnum) {
+		R<Object> response = new R<>()
+				.setCode(responseEnum.getCode())
+				.setMessage(responseEnum.getMessage())
+				.setData(null);
+		return response;
+	}
 	public static R<?> success(String message,Object data) {
 		R<Object> response = new R<>()
 				      .setCode(ResponseEnum.SUCCESS.getCode())
