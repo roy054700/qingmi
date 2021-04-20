@@ -104,21 +104,6 @@ public class CustomerUserConroller extends BaseController {
         return ResponseUtils.success();
     }
 
-    /**
-     * 验证用户名是否存在
-     * @return
-     */
-    @RequestMapping(value = "/username")
-    public R<?> repeat(String username){
-        QueryWrapper<CustomerUser> query = new QueryWrapper<>();
-        query.eq("username",username);
-        int count = customerUserService.count(query);
-        if(count == 0){
-            return ResponseUtils.success();
-        }else {
-            return ResponseUtils.success(ResponseEnum.USER_NAME);
-        }
-    }
 
     /**
      * 用户注册
@@ -241,20 +226,61 @@ public class CustomerUserConroller extends BaseController {
             query.eq("phone_number",phoneNumber);
             int count = customerUserService.count(query);
             if(count != 0){//手机已经注册
-                return ResponseUtils.success(ResponseEnum.PHONE_YES_REGISTER);
+                return ResponseUtils.success(ResponseEnum.PHONE_NO_REGISTER);
             }else{
                 if(StringUtils.isNotEmpty(phoneNumber)){
                     VerificationCode.send(shortMmessage,phoneNumber);
                 }
             }
         }else if(type == 3){//绑定手机号
-            if(StringUtils.isNotEmpty(phoneNumber)){
-                VerificationCode.send(shortMmessage,phoneNumber);
+            //判断当前手机号是否注册
+            QueryWrapper<CustomerUser> query = new QueryWrapper<>();
+            query.eq("phone_number",phoneNumber);
+            int count = customerUserService.count(query);
+            if(count != 0){//手机已经注册
+                return ResponseUtils.success(ResponseEnum.PHONE_NO_REGISTER);
+            }else{
+                if(StringUtils.isNotEmpty(phoneNumber)){
+                    VerificationCode.send(shortMmessage,phoneNumber);
+                }
             }
         }
         return ResponseUtils.success();
     }
-    //用户名是否占用，手机号是否注册
+
+    /**
+     * 验证用户名是否存在
+     * @return
+     */
+    @RequestMapping(value = "/verifyUser")
+    public R<?> verifyUser(String username){
+        QueryWrapper<CustomerUser> query = new QueryWrapper<>();
+        query.eq("username",username);
+        int count = customerUserService.count(query);
+        if(count == 0){
+            return ResponseUtils.success();
+        }else {
+            return ResponseUtils.success(ResponseEnum.USER_NAME);
+        }
+    }
+
+
+    /**
+     * 手机号是否注册
+     * @return
+     */
+    @RequestMapping(value = "/verifPhone")
+    public R<?> verifPhone(String phoneNumber){
+        QueryWrapper<CustomerUser> query = new QueryWrapper<>();
+        query.eq("phone_number",phoneNumber);
+        int count = customerUserService.count(query);
+        if(count == 0){
+            return ResponseUtils.success();
+        }else {
+            return ResponseUtils.success(ResponseEnum.PHONE_NO_REGISTER);
+        }
+    }
+
 
 
 }

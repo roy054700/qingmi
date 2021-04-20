@@ -21,15 +21,19 @@ import com.qingmi.yi.modular.news.model.ResponseParameters;
 import com.qingmi.yi.modular.news.service.FinalNewsContentService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 @Service
+@EnableAsync
 public class FinalNewsContentServiceImpl extends ServiceImpl<FinalNewsContentMapper, FinalNewsContent> implements FinalNewsContentService {
 
     @Autowired
     private FinalNewsContentMapper finalNewsContentMapper;
     @Autowired
     FinalNewsPictureMapper finalNewsPictureMapper;
+    @Autowired
+    AsynchronousService asynchronousService;//监播
 
     @Override
     public List<FinalNewsContent> selectPage(Page<FinalNewsContent> page, FinalNewsContent model,String top) {
@@ -124,6 +128,8 @@ public class FinalNewsContentServiceImpl extends ServiceImpl<FinalNewsContentMap
                 JSONArray list = jsonObject.getJSONArray("ads");
                 JSONObject object = list.getJSONObject(0);
                 Ads ads = JSON.parseObject(object.toString(), Ads.class);
+                asynchronousService.showFollow(ads.getShowFollowUrls());
+//                System.out.println("Ads====="+ads);
                 parameter.setAds(ads);
             }
         }catch (JSONException e){
@@ -146,6 +152,7 @@ public class FinalNewsContentServiceImpl extends ServiceImpl<FinalNewsContentMap
         cnt.setTitle(ads.getDisplayTitle());
         cnt.setUrl(url);
         cnt.setTop(true);
+        cnt.setClickUrls(ads.getClickFollowUrls());
         return cnt;
     }
 

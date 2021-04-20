@@ -30,5 +30,27 @@ public class Ads {
     public String [] endInstalledUrls	;//	否	安装完成监播
 
 
-
+    @Override
+    public String toString() {
+        return "Ads{" +
+                "adType='" + adType + '\'' +
+                ", clickurl='" + clickurl + '\'' +
+                ", deepLink='" + deepLink + '\'' +
+                ", imgurls=" + Arrays.toString(imgurls) +
+                ", adWidth='" + adWidth + '\'' +
+                ", adHeight='" + adHeight + '\'' +
+                ", displayTitle='" + displayTitle + '\'' +
+                ", displayText='" + displayText + '\'' +
+                ", showFollowUrls=" + Arrays.toString(showFollowUrls) +
+                ", clickFollowUrls=" + Arrays.toString(clickFollowUrls) +
+                ", deepLinkUrls=" + Arrays.toString(deepLinkUrls) +
+                ", videoUrl='" + videoUrl + '\'' +
+                ", videoDuration='" + videoDuration + '\'' +
+                ", startDownUrls=" + Arrays.toString(startDownUrls) +
+                ", endDownUrls=" + Arrays.toString(endDownUrls) +
+                ", finishUrls=" + Arrays.toString(finishUrls) +
+                ", startInstalledUrls=" + Arrays.toString(startInstalledUrls) +
+                ", endInstalledUrls=" + Arrays.toString(endInstalledUrls) +
+                '}';
+    }
 }

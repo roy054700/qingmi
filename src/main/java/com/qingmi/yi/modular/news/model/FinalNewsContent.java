@@ -62,6 +62,9 @@ public class FinalNewsContent extends Model<FinalNewsContent> {
 
     @TableField(exist = false)
     private List<FinalNewsPicture> picList;
+    //点击跳转监播链接
+    @TableField(exist = false)
+    private String[] clickUrls;
 
 
 
