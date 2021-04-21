@@ -66,6 +66,10 @@ public class CustomerUser {
      * 手机号
      */
     private String phoneNumber;
+    /**
+     * 邮箱
+     */
+    private String leterBox;
 
     /**
      * 头像
