@@ -59,12 +59,12 @@ public class CustomerUserConroller extends BaseController {
         query.eq("user_id", id);
         user.setCoverFollowCount(followService.count(query));
         List<CustomerUser> list = new ArrayList<>();
-        if(user.getPhoneNumber() != null){
-            user.setPhoneNumber(StaticUtil.replace(user.getPhoneNumber()));
-        }
-        if(user.getLeterBox() != null){
-            user.setLeterBox(StaticUtil.replace(user.getLeterBox()));
-        }
+//        if(user.getPhoneNumber() != null){
+//            user.setPhoneNumber(StaticUtil.replace(user.getPhoneNumber()));
+//        }
+//        if(user.getLeterBox() != null){
+//            user.setLeterBox(StaticUtil.replace(user.getLeterBox()));
+//        }
         list.add(user);
         return ResponseUtils.success(list);
     }
@@ -90,7 +90,11 @@ public class CustomerUserConroller extends BaseController {
             customerUserService.save(user);
         }
         CustomerUser one = customerUserService.getOne(query);
-        return ResponseUtils.success(TokenUtil.getToken(one));
+        if(StringUtils.isEmpty(one.getPhoneNumber())){
+            return ResponseUtils.phone(TokenUtil.getToken(one));
+        }else {
+            return ResponseUtils.success(TokenUtil.getToken(one));
+        }
     }
 
     /**
@@ -161,7 +165,7 @@ public class CustomerUserConroller extends BaseController {
         query.eq("phone_number",user.getPhoneNumber());
         CustomerUser one = customerUserService.getOne(query);
         if(one == null){
-            user.setUsername(user.getPhoneNumber());
+            user.setUsername("游客"+user.getPhoneNumber());
             customerUserService.save(user);
             one = customerUserService.getOne(query);
         }
@@ -199,20 +203,17 @@ public class CustomerUserConroller extends BaseController {
     public R<?> updatePassword(@RequestBody String body){
         JSONObject json = JSONObject.parseObject(body);
         CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
-        String encode = DesUtils.encode(user.getPassword());
-        QueryWrapper<CustomerUser> query = new QueryWrapper<>();
-        query.eq("username",user.getUsername());
-        query.eq("password",encode);
-        int count = customerUserService.count(query);
-        if(count == 0){//用户名或者密码不正确
-            return ResponseUtils.success(ResponseEnum.LOGIN_ERROR);
+        //匹配验证码
+        if(!VerificationCode.matchingCode(user.getCode(),user.getPhoneNumber())){
+            return ResponseUtils.success(ResponseEnum.VERIFICATION_CODE_ERROR);
         }else {
             user.setId(TokenUtil.getTokenUserId());
-            encode = DesUtils.encode(user.getNewPassword());
+            String encode = DesUtils.encode(user.getPassword());
             user.setPassword(encode);
             customerUserService.updateById(user);
             return ResponseUtils.success();
         }
+
     }
     /**
      * 用户获取手机验证码
@@ -238,7 +239,7 @@ public class CustomerUserConroller extends BaseController {
                     VerificationCode.send(shortMmessage,phoneNumber);
                 }
             }
-        }else if(type == 3){//绑定手机号
+        }else if(type == 3){//更换手机号
             //判断当前手机号是否注册
             QueryWrapper<CustomerUser> query = new QueryWrapper<>();
             query.eq("phone_number",phoneNumber);
@@ -301,5 +302,33 @@ public class CustomerUserConroller extends BaseController {
     }
 
 
-
+    /**
+     * 更新微信
+     */
+    @RequestMapping(value = "/updateWeixin")
+    public R<?> updateWeixin(@RequestBody String body){
+        JSONObject json = JSONObject.parseObject(body);
+        CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
+        CustomerUser byId = customerUserService.getById(TokenUtil.getTokenUserId());
+        if(byId.getOpenid().equals(user.getOpenid())){
+            return ResponseUtils.success();
+        }
+        CustomerUser user1 = new CustomerUser();
+        user1.setId(TokenUtil.getTokenUserId());
+        user1.setOpenid(user.getOpenid());
+        if(StringUtils.isEmpty(byId.getNickname())){
+            user1.setNickname(user.getNickname());
+        }
+        if(StringUtils.isEmpty(byId.getHeadPortrait())){
+            user1.setHeadPortrait(user.getHeadPortrait());
+        }
+        if(byId.getSex()==0){
+            user1.setSex(user.getSex());
+        }
+        if(StringUtils.isEmpty(byId.getCity())){
+            user1.setCity(user.getCity());
+        }
+        customerUserService.updateById(user1);
+        return ResponseUtils.success();
+    }
 }

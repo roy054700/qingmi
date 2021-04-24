@@ -12,7 +12,7 @@ shortmmessage:
   secretId: AKIDf6LK4dU85ufOs5jNAgx3uUnkEcsuphha
   secretKey: JPPCi04rMXR4QYWMxgAUdYO4UwVw98sN
   endpoint: sms.tencentcloudapi.com
-  templateID: 921010
+  templateID: 935770
   smsSdkAppid: 1400502936
   sign: 十月历
 

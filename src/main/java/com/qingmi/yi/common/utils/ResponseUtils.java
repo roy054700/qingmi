@@ -21,11 +21,11 @@ public class ResponseUtils {
 		return response;
 	}
 	//绑定手机号
-	public static R<?> phone(String message) {
+	public static R<?> phone(Object data) {
 		R<Object> response = new R<>()
 				.setCode(ResponseEnum.PHONE.getCode())
-				.setMessage(message)
-				.setData(null);
+				.setMessage(ResponseEnum.PHONE.getMessage())
+				.setData(data);
 		return response;
 	}
 	public static R<?> success(String message) {
