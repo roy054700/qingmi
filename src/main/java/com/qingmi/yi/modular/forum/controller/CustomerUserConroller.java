@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,7 +89,7 @@ public class CustomerUserConroller extends BaseController {
         }
         CustomerUser one = customerUserService.getOne(query);
         if(StringUtils.isEmpty(one.getPhoneNumber())){
-            return ResponseUtils.phone(TokenUtil.getToken(one));
+            return ResponseUtils.success(ResponseEnum.PHONE,TokenUtil.getToken(one));
         }else {
             return ResponseUtils.success(TokenUtil.getToken(one));
         }
@@ -180,6 +178,7 @@ public class CustomerUserConroller extends BaseController {
     public R<?> bindingPhone(@RequestBody String body){
         JSONObject json = JSONObject.parseObject(body);
         CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
+        user.setId(TokenUtil.getTokenUserId());
         //判断当前手机号是否被占用
         QueryWrapper<CustomerUser> query = new QueryWrapper<>();
         String phoneNumber = user.getPhoneNumber();
@@ -259,6 +258,18 @@ public class CustomerUserConroller extends BaseController {
             int count = customerUserService.count(query);
             if(count != 0){//手机已经注册
                 return ResponseUtils.success(ResponseEnum.PHONE_NO_REGISTER);
+            }else{
+                if(StringUtils.isNotEmpty(phoneNumber)){
+                    VerificationCode.send(shortMmessage,phoneNumber);
+                }
+            }
+        }else if(type == 5){//找回密码
+            //判断当前手机号是否被别人占用
+            QueryWrapper<CustomerUser> query = new QueryWrapper<>();
+            query.eq("phone_number",phoneNumber);
+            int count = customerUserService.count(query);
+            if(count == 0){//手机已经注册
+                return ResponseUtils.success(ResponseEnum.PHONE_YES_REGISTER);
             }else{
                 if(StringUtils.isNotEmpty(phoneNumber)){
                     VerificationCode.send(shortMmessage,phoneNumber);
