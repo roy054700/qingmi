@@ -41,7 +41,7 @@ public class CustomerUser {
     /**
      * 性别
      */
-    private int sex;
+    private Integer sex;
 
     /**
      * 性别名称
@@ -83,7 +83,7 @@ public class CustomerUser {
     /**
      * 账号是否冻结 0 正常，1冻结
      */
-    private int frozen;
+    private Integer frozen;
 
     //关注的人数
     @TableField(exist = false)

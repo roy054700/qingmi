@@ -69,7 +69,10 @@ public class CustomerUserConroller extends BaseController {
 
 
     /**
-     * 当前微信用户不存在即插入并查询，存在则查询
+     * 微信登录，注册，验证接口
+     * 验证微信是否注册，如果没有，验证参数是否存在手机号，
+     * 如果存在手机号就注册，否则返回提示绑定手机号
+     * 如果微信已经注册 直接登录
      * @param body
      * @return
      */
@@ -80,19 +83,30 @@ public class CustomerUserConroller extends BaseController {
         QueryWrapper<CustomerUser> query = new QueryWrapper<>();
         query.eq("openid",user.getOpenid());
         if(customerUserService.count(query) == 0){
-            if(user.getSex() == 1){
-                user.setSexname("男");
-            }else{
-                user.setSexname("女");
+            if(StringUtils.isEmpty(user.getPhoneNumber())){//去绑定手机号
+                return ResponseUtils.success(ResponseEnum.PHONE);
+            }else {
+                QueryWrapper<CustomerUser> queryPhone = new QueryWrapper<>();
+                queryPhone.eq("phone_number",user.getPhoneNumber());
+                CustomerUser one = customerUserService.getOne(queryPhone);
+                if(one == null){//当前手机号未占用，即注册
+                    if(user.getSex() == 1){
+                        user.setSexname("男");
+                    }else{
+                        user.setSexname("女");
+                    }
+                    customerUserService.save(user);
+                }else{//绑定微信
+                    CustomerUser weixin = new CustomerUser();
+                    weixin.setId(one.getId());
+                    weixin.setOpenid(user.getOpenid());
+                    weixin.setSex(null);
+                    weixin.setFrozen(null);
+                    customerUserService.updateById(weixin);
+                }
             }
-            customerUserService.save(user);
         }
-        CustomerUser one = customerUserService.getOne(query);
-        if(StringUtils.isEmpty(one.getPhoneNumber())){
-            return ResponseUtils.success(ResponseEnum.PHONE,TokenUtil.getToken(one));
-        }else {
-            return ResponseUtils.success(TokenUtil.getToken(one));
-        }
+        return ResponseUtils.success(TokenUtil.getToken(customerUserService.getOne(query)));
     }
 
     /**
@@ -226,24 +240,12 @@ public class CustomerUserConroller extends BaseController {
             if(StringUtils.isNotEmpty(phoneNumber)) {
                 VerificationCode.send(shortMmessage, phoneNumber);
             }
-        }else if(type == 2){//注册
+        }else if(type == 2 || type == 3){//注册，更换手机号
             //判断当前手机号是否注册
             QueryWrapper<CustomerUser> query = new QueryWrapper<>();
             query.eq("phone_number",phoneNumber);
-            int count = customerUserService.count(query);
-            if(count != 0){//手机已经注册
-                return ResponseUtils.success(ResponseEnum.PHONE_NO_REGISTER);
-            }else{
-                if(StringUtils.isNotEmpty(phoneNumber)){
-                    VerificationCode.send(shortMmessage,phoneNumber);
-                }
-            }
-        }else if(type == 3){//更换手机号
-            //判断当前手机号是否注册
-            QueryWrapper<CustomerUser> query = new QueryWrapper<>();
-            query.eq("phone_number",phoneNumber);
-            int count = customerUserService.count(query);
-            if(count != 0){//手机已经注册
+            CustomerUser one = customerUserService.getOne(query);
+            if(one != null){//手机已经注册
                 return ResponseUtils.success(ResponseEnum.PHONE_NO_REGISTER);
             }else{
                 if(StringUtils.isNotEmpty(phoneNumber)){
@@ -268,8 +270,19 @@ public class CustomerUserConroller extends BaseController {
             QueryWrapper<CustomerUser> query = new QueryWrapper<>();
             query.eq("phone_number",phoneNumber);
             int count = customerUserService.count(query);
-            if(count == 0){//手机已经注册
+            if(count == 0){//手机没有注册
                 return ResponseUtils.success(ResponseEnum.PHONE_YES_REGISTER);
+            }else{
+                if(StringUtils.isNotEmpty(phoneNumber)){
+                    VerificationCode.send(shortMmessage,phoneNumber);
+                }
+            }
+        }else if(type == 6){//微信注册绑定手机
+            QueryWrapper<CustomerUser> query = new QueryWrapper<>();
+            query.eq("phone_number",phoneNumber);
+            CustomerUser one = customerUserService.getOne(query);
+            if(one != null && StringUtils.isNotEmpty(one.getOpenid())){//手机已经注册
+                return ResponseUtils.success(ResponseEnum.PHONE_NO_REGISTER);
             }else{
                 if(StringUtils.isNotEmpty(phoneNumber)){
                     VerificationCode.send(shortMmessage,phoneNumber);
