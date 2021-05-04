@@ -281,7 +281,7 @@ public class CustomerUserConroller extends BaseController {
             QueryWrapper<CustomerUser> query = new QueryWrapper<>();
             query.eq("phone_number",phoneNumber);
             CustomerUser one = customerUserService.getOne(query);
-            if(one != null && StringUtils.isNotEmpty(one.getOpenid())){//手机已经注册
+            if(one != null){//手机已经注册
                 return ResponseUtils.success(ResponseEnum.PHONE_NO_REGISTER);
             }else{
                 if(StringUtils.isNotEmpty(phoneNumber)){
