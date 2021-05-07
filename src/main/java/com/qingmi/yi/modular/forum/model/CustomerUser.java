@@ -75,6 +75,15 @@ public class CustomerUser {
      * 头像
      */
     private String headPortrait;
+    /**
+     * 背景
+     */
+    private String homeBackground;
+    /**
+     * 头像，背景 二进制数据
+     */
+    @TableField(exist = false)
+    private byte[] bitmapByte;
 
     /**
      * bitmap头像

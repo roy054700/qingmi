@@ -11,12 +11,14 @@ import com.qingmi.yi.modular.forum.model.CustomerUser;
 import com.qingmi.yi.modular.forum.model.Follow;
 import com.qingmi.yi.modular.forum.service.CustomerUserService;
 import com.qingmi.yi.modular.forum.service.FollowService;
+import com.qingmi.yi.modular.forum.service.impl.UploadService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +34,10 @@ public class CustomerUserConroller extends BaseController {
     private CustomerUserService customerUserService;
     @Autowired
     private FollowService followService;
-
     @Autowired
     private ShortMmessage shortMmessage ;//短信配置数据
+    @Autowired //上传文件 七牛
+    private UploadService uploadService;
 
     /**
      * 个人主页
@@ -57,12 +60,6 @@ public class CustomerUserConroller extends BaseController {
         query.eq("user_id", id);
         user.setCoverFollowCount(followService.count(query));
         List<CustomerUser> list = new ArrayList<>();
-//        if(user.getPhoneNumber() != null){
-//            user.setPhoneNumber(StaticUtil.replace(user.getPhoneNumber()));
-//        }
-//        if(user.getLeterBox() != null){
-//            user.setLeterBox(StaticUtil.replace(user.getLeterBox()));
-//        }
         list.add(user);
         return ResponseUtils.success(list);
     }
@@ -118,10 +115,25 @@ public class CustomerUserConroller extends BaseController {
     public R<?> update(@RequestBody String body){
         JSONObject json = JSONObject.parseObject(body);
         CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
+        if(StringUtils.isNotEmpty(user.getHeadPortrait())){
+            try {
+                uploadService.upload(user.getBitmapByte(),user.getHeadPortrait());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            user.setHeadPortrait(Constants.upload_url+user.getHeadPortrait());
+        }
+        if(StringUtils.isNotEmpty(user.getHomeBackground())){
+            try {
+                uploadService.upload(user.getBitmapByte(),user.getHomeBackground());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            user.setHomeBackground(Constants.upload_url+user.getHomeBackground());
+        }
         customerUserService.updateById(user);
         return ResponseUtils.success();
     }
-
 
     /**
      * 用户注册
@@ -131,7 +143,6 @@ public class CustomerUserConroller extends BaseController {
     public R<?> userRegister(@RequestBody String body){
         JSONObject json = JSONObject.parseObject(body);
         CustomerUser user = JSON.toJavaObject(json, CustomerUser.class);
-
         //匹配验证码
         if(!VerificationCode.matchingCode(user.getCode(),user.getPhoneNumber())){
             return ResponseUtils.success(ResponseEnum.VERIFICATION_CODE_ERROR);

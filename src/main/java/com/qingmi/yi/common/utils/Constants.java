@@ -1,5 +1,7 @@
 package com.qingmi.yi.common.utils;
 
+import javax.crypto.spec.SecretKeySpec;
+
 /**
  * 常量数据
  * @Author: 李龙真
@@ -12,5 +14,5 @@ public class Constants {
     public static final Integer TOP_SIZE = 5;
 
     public static final String  FOCUS = "95206,95207,95208,95209,30001,30002,30003"; // 焦点图广告
-
+    public static final String upload_url = "http://mary.qimgmi.com/";
 }
