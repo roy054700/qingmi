@@ -150,7 +150,9 @@ public class CustomerUserConroller extends BaseController {
         String pass = DesUtils.encode(user.getPassword());//加密
         user.setPassword(pass);
         customerUserService.save(user);
-        return ResponseUtils.success();
+        QueryWrapper<CustomerUser> query = new QueryWrapper<>();
+        query.eq("username",user.getUsername());
+        return ResponseUtils.success(TokenUtil.getToken(customerUserService.getOne(query)));
     }
 
     /**
